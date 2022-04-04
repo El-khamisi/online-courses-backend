@@ -1,0 +1,33 @@
+{
+  "name": "textgenuss",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "prettier": "prettier --config .prettierrc 'src/**/*.js' --write",
+    "dev": "nodemon index.js 5050",
+    "prod": "node index.js 8080",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.2"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.9",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.4",
+    "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0"
+  }
+}
