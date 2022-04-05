@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const membership = require('../../config/membership');
 
 const courseSchema = new mongoose.Schema({
   name: { type: String, trim: true },
@@ -10,6 +11,7 @@ const courseSchema = new mongoose.Schema({
     text: { type: String },
     list: [{ type: String }],
   },
+  membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
 });
 
 module.exports = mongoose.model('Course', courseSchema);

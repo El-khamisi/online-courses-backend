@@ -7,7 +7,7 @@ exports.authN = (req, res, next) => {
     if (!req.cookies.authorization) {
       throw new Error('Login first');
     }
-    const token = req.cookies.authorization.split(' ')[1];
+    const token = req.cookies.authorization;
     const verify = jwt.verify(token, TOKENKEY);
     res.locals.user = verify;
     next();

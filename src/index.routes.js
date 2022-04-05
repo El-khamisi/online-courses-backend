@@ -6,6 +6,9 @@ const morgan = require('morgan');
 
 const login = require('./services/login/login.routes');
 const course = require('./services/course/course.routes');
+const dashboard = require('./services/dashboard/index.routes');
+const membership = require('./services/membership/membership.routes');
+const role = require('./services/role/role.routes');
 
 module.exports = (app) => {
   // Middlewares
@@ -22,6 +25,9 @@ module.exports = (app) => {
   //Routers
   app.use(morgan('dev'));
 
-  app.use(course);
   app.use(login);
+  app.use(dashboard);
+  app.use(course);
+  app.use(membership);
+  app.use(role);
 };

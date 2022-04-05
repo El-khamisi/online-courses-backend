@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 //configuration
 const { TOKENKEY } = require('../../config/env');
@@ -9,15 +10,15 @@ const membership = require('../../config/membership');
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: { type: String, trim: true },
-    lastName: { type: String, trim: true },
-    email: { type: String, trim: true, required: [true, 'Email is required'], unique: true, lowercase: true },
+    first_name: { type: String, trim: true },
+    last_name: { type: String, trim: true },
+    email: { type: String, trim: true, required: [true, 'Email is required'], unique: true, validate: [validator.isEmail, 'Invalid Email'] },
     phone: { type: String },
     password: { type: String, required: [true, 'Password is required'] },
     thumbnail: { type: String },
-    role: { type: String, enum: [Object.values(roles), 'Invalid role title'] },
-    membership: { type: String, enum: [Object.values(membership), 'Invalid membership plan'] },
-    inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lesson: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' } }],
+    role: { type: String, enum: [...Object.values(roles), 'Invalid role title'], default: roles.Student },
+    membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
+    inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lessons: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' } }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
   },
   { strict: false }
@@ -43,7 +44,7 @@ userSchema.methods.generateToken = function (res) {
   return token;
 };
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', async function (next) {
   if (this.email && this.password) {
     this.password = bcrypt.hashSync(this.password, 10);
     next();
