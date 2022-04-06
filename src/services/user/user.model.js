@@ -15,11 +15,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, trim: true, required: [true, 'Email is required'], unique: true, validate: [validator.isEmail, 'Invalid Email'] },
     phone: { type: String },
     password: { type: String, required: [true, 'Password is required'] },
-    thumbnail: { type: String },
     role: { type: String, enum: [...Object.values(roles), 'Invalid role title'], default: roles.Student },
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
     inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lessons: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' } }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+    photo: {type: String},
   },
   { strict: false }
 );

@@ -11,6 +11,7 @@ const courseSchema = new mongoose.Schema({
     text: { type: String },
     list: [{ type: String }],
   },
+  photo: {type: String},
   membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
 });
 

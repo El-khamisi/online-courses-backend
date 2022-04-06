@@ -1,40 +1,40 @@
 const Course = require('./course.model');
-const {Admin, Instructor, Student} = require('../../config/roles');
-const {freePlan, premiumPlan} = require('../../config/membership');
+const { Admin, Instructor, Student } = require('../../config/roles');
+const { freePlan, premiumPlan } = require('../../config/membership');
 const { successfulRes, failedRes } = require('../../utils/response');
 
-const filterPremium = (course, membership)=>{
-  if(membership == freePlan && course.membership == premiumPlan){
+const filterPremium = (course, membership) => {
+  if (membership == freePlan && course.membership == premiumPlan) {
     course.lessons = undefined;
     course.quizzes = undefined;
   }
   return course;
-}
+};
 
-const filterByMembership = (response, membership, role, instID)=>{
-  if(role == Instructor){
-    if(!response){
+const filterByMembership = (response, membership, role, instID) => {
+  if (role == Instructor) {
+    if (!response) {
       return null;
-    }else if(response.length && response.length>0){
-      response.forEach((e, i)=>{
-        if(e.instructor != instID)response[i]=filterPremium(e, membership);
+    } else if (response.length && response.length > 0) {
+      response.forEach((e, i) => {
+        if (e.instructor != instID) response[i] = filterPremium(e, membership);
       });
-    }else{
-      if(response.instructor != instID)response=filterPremium(response, membership);
+    } else {
+      if (response.instructor != instID) response = filterPremium(response, membership);
     }
-  } else{
-    if(!response){
+  } else {
+    if (!response) {
       return null;
-    }else if(response.length && response.length>0){
-      response.forEach((e, i)=>{
-        response[i]=filterPremium(e, membership);
+    } else if (response.length && response.length > 0) {
+      response.forEach((e, i) => {
+        response[i] = filterPremium(e, membership);
       });
-    }else{
-      response=filterPremium(response, membership);
+    } else {
+      response = filterPremium(response, membership);
     }
   }
   return response;
-}
+};
 
 exports.getCourses = async (req, res) => {
   try {
@@ -55,23 +55,26 @@ exports.getCourses = async (req, res) => {
     } else {
       response = await Course.find({}).exec();
     }
-    
 
-  //filter Response
-  if(role == Instructor){
-    response = filterByMembership(response, membership, role, id)
-  }else {
-    response = filterByMembership(response, membership, role, null)
-  }
-  
-  if(response && response.length && response.length>0){
-    for(let i=0; i<response.length; i++){
-      response[i] = await response[i].populate('instructor');
+    //filter Response
+    if (role == Instructor) {
+      response = filterByMembership(response, membership, role, id);
+    } else {
+      response = filterByMembership(response, membership, role, null);
     }
-  }else{
-    response = await response.populate('instructor');
-  }
-  return successfulRes(res, 200, response);
+
+    if (response && response.length && response.length > 0) {
+      for (let i = 0; i < response.length; i++) {
+        response[i] = await response[i].populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
+        response[i] = await response[i].populate('lessons');
+        response[i] = await response[i].populate('quizzes');
+      }
+    } else {
+      response = await response.populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
+      response = await response.populate('lessons');
+      response = await response.populate('quizzes');
+    }
+    return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
   }
@@ -86,12 +89,15 @@ exports.getCourse = async (req, res) => {
     const membership = res.locals.user.membership;
     let response = await Course.findById(_id).exec();
 
-    if(role == Instructor){
-      response = filterByMembership(response, membership, role, id)
-    }else {
-      response = filterByMembership(response, membership, role, null)
+    if (role == Instructor) {
+      response = filterByMembership(response, membership, role, id);
+    } else {
+      response = filterByMembership(response, membership, role, null);
     }
-    response = await response.populate('instructor');
+    response = await response.populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
+    response = await response.populate('lessons');
+    response = await response.populate('quizzes');
+    
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -100,7 +106,8 @@ exports.getCourse = async (req, res) => {
 
 exports.addCourse = async (req, res) => {
   try {
-    const { name, price, instructor, text, list, membership} = req.body;
+    const { name, price, instructor, text, list, membership } = req.body;
+    const photo = req.file?.path;
 
     const saved = new Course({
       name,
@@ -111,6 +118,7 @@ exports.addCourse = async (req, res) => {
         list: list,
       },
       membership,
+      photo
     });
 
     await saved.save();
@@ -125,17 +133,19 @@ exports.updateCourse = async (req, res) => {
   try {
     const _id = req.params.id;
     const { name, price, instructor, text, list, membership } = req.body;
+    const photo = req.file?.path;
+
     let doc = await Course.findById(_id).exec();
 
     doc.name = name ? name : doc.name;
     doc.price = price ? price : doc.price;
     doc.instructor = instructor ? instructor : doc.instructor;
     doc.membership = membership ? membership : doc.membership;
-
     doc.description = {
       text: text ? text : doc.description.text,
       list: list ? list : doc.description.list,
     };
+    doc.photo = photo ? photo : doc.photo;
 
     await doc.save();
 

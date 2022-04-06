@@ -1,16 +1,42 @@
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-const storage = multer.diskStorage({
-  // destination: function (req, file, cb) {
-  //   cb(null, '/tmp/thumb');
-  // },
+const imageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const tmpPath = path.join('tmp', 'thumbs');
+
+    if (!fs.existsSync(tmpPath)) {
+      fs.mkdirSync(tmpPath, { recursive: true });
+    }
+    cb(null, tmpPath);
+  },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.originalname);
+    const uniquePreffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniquePreffix + file.originalname);
   },
 });
-// filename
 
-const upload = multer({ storage: storage });
+const videoStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const tmpPath = path.join('tmp', 'videos');
 
-module.exports = { multer: upload };
+    if (!fs.existsSync(tmpPath)) {
+      fs.mkdirSync(tmpPath, { recursive: true });
+    }
+    cb(null, tmpPath);
+  },
+  filename: function (req, file, cb) {
+    const uniquePreffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null,uniquePreffix + file.originalname);
+  },
+});
+
+
+const imageUpload = multer({ storage: imageStorage });
+const videoUpload = multer({storage: videoStorage})
+
+module.exports = {
+  imageUpload,
+  videoUpload
+}

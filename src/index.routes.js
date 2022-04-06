@@ -1,8 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const { multer } = require('./config/multer');
 
 const login = require('./services/login/login.routes');
 const course = require('./services/course/course.routes');

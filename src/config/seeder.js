@@ -6,6 +6,8 @@ const superAdmin = async () => {
     email: 'admin@test.com',
   }).exec();
   const prototype = {
+    first_name: 'cup',
+    last_name: 'cake',
     email: 'admin@test.com',
     password: 'admin123',
     role: Admin,

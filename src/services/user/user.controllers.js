@@ -38,14 +38,19 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const thumbnail = req.file;
-    const { first_name, last_name, email, 
-      phone, password, role, membership} = req.body;
+    const { first_name, last_name, email, phone, password, role, membership } = req.body;
+    const photo = req.file?.path;
+
 
     const saved = new User({
-        first_name, last_name,
-        email, phone, password, 
-        role, membership
+      first_name,
+      last_name,
+      email,
+      phone,
+      password,
+      role,
+      membership,
+      photo
     });
 
     await saved.save();
@@ -59,9 +64,10 @@ exports.addUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { first_name, last_name, email, 
-      phone, password, role, membership} = req.body;
-    let doc = await User.findById(_id)
+    const { first_name, last_name, email, phone, password, role, membership } = req.body;
+    const photo = req.file?.path;
+
+    let doc = await User.findById(_id);
 
     doc.first_name = first_name ? first_name : doc.first_name;
     doc.last_name = last_name ? last_name : doc.last_name;
@@ -70,9 +76,10 @@ exports.updateUser = async (req, res) => {
     doc.password = password ? password : doc.password;
     doc.role = role ? role : doc.role;
     doc.membership = membership ? membership : doc.membership;
-    
+    doc.photo = photo ? photo : doc.photo;    
+
     const valid = doc.validateSync();
-    if(valid) throw valid;
+    if (valid) throw valid;
     await doc.save();
     doc.password = undefined;
     return successfulRes(res, 200, doc);

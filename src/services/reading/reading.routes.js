@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const authN = require('../../middelwares/authN');
-const {  } = require('./course.controllers');
+const {} = require('./course.controllers');
 
 router.get('/lessons', authN, getCourses);
 router.get('/lesson/:id', authN, getCourse);
