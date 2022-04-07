@@ -1,46 +1,13 @@
 const Course = require('./course.model');
-const { Admin, Instructor, Student } = require('../../config/roles');
-const { freePlan, premiumPlan } = require('../../config/membership');
+const { Instructor } = require('../../config/roles');
+const { filterByMembership } = require('../../utils/filterCourses');
 const { successfulRes, failedRes } = require('../../utils/response');
-
-const filterPremium = (course, membership) => {
-  if (membership == freePlan && course.membership == premiumPlan) {
-    course.lessons = undefined;
-    course.quizzes = undefined;
-  }
-  return course;
-};
-
-const filterByMembership = (response, membership, role, instID) => {
-  if (role == Instructor) {
-    if (!response) {
-      return null;
-    } else if (response.length && response.length > 0) {
-      response.forEach((e, i) => {
-        if (e.instructor != instID) response[i] = filterPremium(e, membership);
-      });
-    } else {
-      if (response.instructor != instID) response = filterPremium(response, membership);
-    }
-  } else {
-    if (!response) {
-      return null;
-    } else if (response.length && response.length > 0) {
-      response.forEach((e, i) => {
-        response[i] = filterPremium(e, membership);
-      });
-    } else {
-      response = filterPremium(response, membership);
-    }
-  }
-  return response;
-};
 
 exports.getCourses = async (req, res) => {
   try {
     let q = req.query;
     let response;
-    const id = res.locals.user.id;
+    const user_id = res.locals.user.id;
     const role = res.locals.user.role;
     const membership = res.locals.user.membership;
 
@@ -57,22 +24,16 @@ exports.getCourses = async (req, res) => {
     }
 
     //filter Response
-    if (role == Instructor) {
-      response = filterByMembership(response, membership, role, id);
-    } else {
-      response = filterByMembership(response, membership, role, null);
-    }
+    response = filterByMembership(response, membership, role, user_id);
 
     if (response && response.length && response.length > 0) {
       for (let i = 0; i < response.length; i++) {
         response[i] = await response[i].populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
-        response[i] = await response[i].populate('lessons');
-        response[i] = await response[i].populate('quizzes');
+        response[i] = await response[i].populate({ path: 'lessons', select: 'name' });
       }
     } else {
       response = await response.populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
-      response = await response.populate('lessons');
-      response = await response.populate('quizzes');
+      response = await response.populate({ path: 'lessons', select: 'name' });
     }
     return successfulRes(res, 200, response);
   } catch (e) {
@@ -84,20 +45,16 @@ exports.getCourse = async (req, res) => {
   try {
     const _id = req.params.id;
 
-    const id = res.locals.user.id;
+    const user_id = res.locals.user.id;
     const role = res.locals.user.role;
     const membership = res.locals.user.membership;
     let response = await Course.findById(_id).exec();
 
-    if (role == Instructor) {
-      response = filterByMembership(response, membership, role, id);
-    } else {
-      response = filterByMembership(response, membership, role, null);
-    }
+    response = filterByMembership(response, membership, role, user_id);
+
     response = await response.populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
-    response = await response.populate('lessons');
-    response = await response.populate('quizzes');
-    
+    response = await response.populate({ path: 'lessons', select: 'name' });
+
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -118,7 +75,7 @@ exports.addCourse = async (req, res) => {
         list: list,
       },
       membership,
-      photo
+      photo,
     });
 
     await saved.save();

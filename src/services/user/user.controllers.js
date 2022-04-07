@@ -41,7 +41,6 @@ exports.addUser = async (req, res) => {
     const { first_name, last_name, email, phone, password, role, membership } = req.body;
     const photo = req.file?.path;
 
-
     const saved = new User({
       first_name,
       last_name,
@@ -50,7 +49,7 @@ exports.addUser = async (req, res) => {
       password,
       role,
       membership,
-      photo
+      photo,
     });
 
     await saved.save();
@@ -76,7 +75,7 @@ exports.updateUser = async (req, res) => {
     doc.password = password ? password : doc.password;
     doc.role = role ? role : doc.role;
     doc.membership = membership ? membership : doc.membership;
-    doc.photo = photo ? photo : doc.photo;    
+    doc.photo = photo ? photo : doc.photo;
 
     const valid = doc.validateSync();
     if (valid) throw valid;

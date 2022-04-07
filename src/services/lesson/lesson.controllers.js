@@ -1,20 +1,22 @@
 const Course = require('../course/course.model');
 const Lesson = require('./lesson.model');
+const { filterByMembership } = require('../../utils/filterCourses');
 const { successfulRes, failedRes } = require('../../utils/response');
 
 exports.getLessons = async (req, res) => {
   try {
-    let q = req.query;
-    let response;
+    const course_id = req.params.course_id;
+    const user_id = res.locals.user.id;
+    const role = res.locals.user.role;
+    const membership = res.locals.user.membership;
 
-    if (q.name) {
-      response = await Lesson.find({
-        name: q.name,
-      }).exec();
-    } else {
-      response = await Lesson.find({}).exec();
-    }
-    return successfulRes(res, 200, response);
+    let course = await Course.findById(course_id).exec();
+    if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
+    course = filterByMembership(course, membership, role, user_id);
+    course = await course.populate('lessons');
+    const doc = course.lessons;
+
+    return successfulRes(res, 200, doc);
   } catch (e) {
     return failedRes(res, 500, e);
   }
@@ -22,11 +24,22 @@ exports.getLessons = async (req, res) => {
 
 exports.getLesson = async (req, res) => {
   try {
+    const course_id = req.params.course_id;
     const _id = req.params.id;
 
-    const response = await Lesson.findById(_id).exec();
+    const course = await Course.findById(course_id).exec();
+    if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
+    course_id = filterByMembership(course_id, membership, role, user_id);
 
-    return successfulRes(res, 200, response);
+    let child_id;
+    course.lessons.forEach((e) => {
+      if (e._id == _id) child_id = e._id;
+    });
+
+    const doc = await Lesson.findById(child_id).exec();
+    course = await course.populate('quizzes');
+
+    return successfulRes(res, 200, doc);
   } catch (e) {
     return failedRes(res, 500, e);
   }
@@ -39,7 +52,7 @@ exports.addLesson = async (req, res) => {
     const video = req.file?.path;
 
     const course = await Course.findById(course_id).exec();
-    if(!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
+    if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
 
     const saved = new Lesson({
       name,
@@ -64,12 +77,12 @@ exports.updateLesson = async (req, res) => {
     const video = req.file?.path;
 
     const course = await Course.findById(course_id).exec();
-    if(!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
+    if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
 
     let child_id;
-    course.lessons.forEach(e=>{
-      if(e._id == _id) child_id = e._id;
-    })
+    course.lessons.forEach((e) => {
+      if (e._id == _id) child_id = e._id;
+    });
 
     const doc = await Lesson.findById(_id).exec();
 
@@ -89,7 +102,7 @@ exports.deleteLesson = async (req, res) => {
   try {
     const _id = req.params.id;
 
-    const response = await User.findByIdAndDelete(_id).exec();
+    const response = await Lesson.findByIdAndDelete(_id).exec();
 
     return successfulRes(res, 200, response);
   } catch (e) {

@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
     inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lessons: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' } }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-    photo: {type: String},
+    photo: { type: String },
   },
   { strict: false }
 );

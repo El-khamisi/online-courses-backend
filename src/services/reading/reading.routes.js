@@ -1,12 +1,9 @@
 const router = require('express').Router();
 
-const authN = require('../../middelwares/authN');
-const {} = require('./course.controllers');
+const { authN } = require('../../middelwares/authN');
+const { getReadings, getReading } = require('./reading.controllers');
 
-router.get('/lessons', authN, getCourses);
-router.get('/lesson/:id', authN, getCourse);
-router.post('/lesson/:courseID', authN, addCourse);
-router.put('/lesson/:id', authN, updateCourse);
-router.delete('/lesson/:id', authN, deleteCourse);
+router.get('/readings', authN, getReadings);
+router.get('/reading/:id', authN, getReading);
 
 module.exports = router;
