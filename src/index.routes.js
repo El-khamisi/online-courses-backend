@@ -12,6 +12,7 @@ const reading = require('./services/reading/reading.routes');
 const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
+const profile = require('./services/user/profile.routes');
 
 module.exports = (app) => {
   // Middlewares
@@ -34,6 +35,7 @@ module.exports = (app) => {
   app.use(lesson);
   app.use(quiz);
   app.use(reading);
+  app.use(profile);
 
   app.use(membership);
   app.use(role);

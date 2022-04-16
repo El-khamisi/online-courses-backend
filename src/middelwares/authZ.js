@@ -38,3 +38,19 @@ exports.isPremium = async (req, res, next) => {
     else return failedRes(res, 401, e);
   }
 };
+
+exports.whoiam = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const user_id = res.locals.id;
+
+    if (_id != user_id) {
+      throw new Error('It is NOT you');
+    } else {
+      return next();
+    }
+  } catch (e) {
+    if (e instanceof ReferenceError) return failedRes(res, 500, e);
+    else return failedRes(res, 401, e);
+  }
+};
