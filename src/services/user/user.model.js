@@ -30,7 +30,7 @@ userSchema.methods.generateToken = function (res) {
       id: this._id,
       name: this.firstName + ' ' + this.lastName,
       email: this.email,
-      photo: this.thumbnail,
+      photo: this.photo,
       role: this.role,
       membership: this.membership,
     },
@@ -40,6 +40,8 @@ userSchema.methods.generateToken = function (res) {
 
   res.cookie('authorization', token, {
     maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
+    sameSite: 'none',
+    secure: true,
   });
   return token;
 };
