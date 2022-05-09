@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator');
 
 //configuration
-const { TOKENKEY, NODE_ENV} = require('../../config/env');
+const { TOKENKEY, NODE_ENV } = require('../../config/env');
 const roles = require('../../config/roles');
 const membership = require('../../config/membership');
 
@@ -40,11 +40,10 @@ userSchema.methods.generateToken = function (res) {
   res.cookie('authorization', token, {
     maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
     sameSite: 'none',
-    secure: NODE_ENV == 'dev'? false : true,
+    secure: NODE_ENV == 'dev' ? false : true,
   });
   return token;
 };
-
 
 //Exclude findOne for Login password
 userSchema.post(['save', 'find', 'findByIdAndUpdate', 'findByIdAndDelete'], function (doc, next) {

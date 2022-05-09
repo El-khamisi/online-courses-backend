@@ -18,26 +18,27 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
 module.exports = async (app) => {
-  
   let clientPromise;
-  if(NODE_ENV == 'dev'){
-    clientPromise = mongoose.connect(DBURI)
-    .then((conn) => {
-      console.log('connected to database successfully');
-      return conn.connection.getClient();
-    })
-    .catch(() => {
-      console.log("can't connect to database");
-    });
-  }else{
-    clientPromise = mongoose.connect(DBURI_remote)
-    .then((conn) => {
-      console.log('connected to database successfully');
-      return conn.connection.getClient();
-    })
-    .catch(() => {
-      console.log("can't connect to database");
-    });
+  if (NODE_ENV == 'dev') {
+    clientPromise = mongoose
+      .connect(DBURI)
+      .then((conn) => {
+        console.log('connected to database successfully');
+        return conn.connection.getClient();
+      })
+      .catch(() => {
+        console.log("can't connect to database");
+      });
+  } else {
+    clientPromise = mongoose
+      .connect(DBURI_remote)
+      .then((conn) => {
+        console.log('connected to database successfully');
+        return conn.connection.getClient();
+      })
+      .catch(() => {
+        console.log("can't connect to database");
+      });
   }
 
   // Middlewares
@@ -48,7 +49,7 @@ module.exports = async (app) => {
       resave: false,
       saveUninitialized: true,
       cookie: {
-        secure: NODE_ENV == 'dev'? false : true,
+        secure: NODE_ENV == 'dev' ? false : true,
         sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
       },

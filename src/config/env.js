@@ -10,4 +10,8 @@ module.exports = {
   cloudinary_api_key: process.env.cloudinary_api_key,
   cloudinary_api_secret: process.env.cloudinary_api_secret,
   NODE_ENV: process.env.NODE_ENV,
+
+  PAYMOB_APIKEY: process.env.PAYMOB_APIKEY,
+  PAYMOB_integration_id: process.env.PAYMOB_integration_id,
+  PAYMOB_HMAC: process.env.PAYMOB_HMAC,
 };

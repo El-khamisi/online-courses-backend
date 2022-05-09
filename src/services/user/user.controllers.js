@@ -66,7 +66,7 @@ exports.updateUser = async (req, res) => {
 
     let doc = await User.findById(_id);
     if (photo) {
-      doc.thumbnail = await upload_image(photo, doc._id, 'user_thumbs');
+      doc.photo = await upload_image(photo, doc._id, 'user_thumbs');
     }
     doc.first_name = first_name ? first_name : doc.first_name;
     doc.last_name = last_name ? last_name : doc.last_name;
@@ -74,8 +74,7 @@ exports.updateUser = async (req, res) => {
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
     doc.membership = membership ? membership : doc.membership;
-    
-    
+
     if (password) {
       doc.password = bcrypt.hashSync(password, 10);
     }

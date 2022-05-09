@@ -1,5 +1,4 @@
 const Course = require('./course.model');
-const { freePlan, premiumPlan } = require('../../config/membership');
 const { successfulRes, failedRes } = require('../../utils/response');
 
 exports.getCourses = async (req, res) => {

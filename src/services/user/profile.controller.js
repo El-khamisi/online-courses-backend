@@ -1,5 +1,8 @@
+const bcrypt = require('bcrypt');
 const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
+const Course = require('../course/course.model');
+const { premiumPlan } = require('../../config/membership');
 
 exports.profileView = async (req, res) => {
   try {
@@ -23,15 +26,16 @@ exports.profileUpdate = async (req, res) => {
     const photo = req.file?.path;
 
     let doc = await User.findById(_id);
-
+    if (photo) {
+      doc.photo = await upload_image(photo, doc._id, 'user_thumbs');
+    }
     doc.first_name = first_name ? first_name : doc.first_name;
     doc.last_name = last_name ? last_name : doc.last_name;
     doc.email = email ? email : doc.email;
     doc.phone = phone ? phone : doc.phone;
-    doc.password = password ? password : doc.password;
-
-    // doc.membership = membership ? membership : doc.membership;
-    doc.photo = photo ? photo : doc.photo;
+    if (password) {
+      doc.password = bcrypt.hashSync(password, 10);
+    }
 
     const valid = doc.validateSync();
     if (valid) throw valid;
@@ -55,22 +59,32 @@ exports.profileDelete = async (req, res) => {
   }
 };
 
-exports.mycourses = async (req, res) => {};
 exports.enroll = async (req, res) => {
   try {
     const course_id = req.params.course_id;
     const _id = res.locals.user.id;
 
     let doc = await User.findById(_id).exec();
+    doc = await doc.populate('completed');
+    doc = await doc.populate('inprogress');
 
-    doc.inprogress.forEach((e) => {
-      if (e.course == course_id) throw new Error('Your have already enrolled to this course');
-    });
     doc.completed.forEach((e) => {
       if (e == course_id) throw new Error('Your have already completed to this course');
     });
 
-    doc.inprogress.push({ course: course_id, lessons: [] });
+    const course = Course.findById(course_id).exec();
+    let enrolled = false;
+    doc.inprogress.forEach((e) => {
+      if (e.course == course_id) enrolled = true;
+    });
+    if (!enrolled) {
+      if (course.membership == premiumPlan) {
+        req.session.course = course;
+        res.redirect('/pay');
+      }
+      doc.inprogress.push({ course: course_id, lessons: [] });
+    }
+
     await doc.save();
     doc.password = undefined;
     return successfulRes(res, 201, course_id);
@@ -86,6 +100,8 @@ exports.learn = async (req, res) => {
     const _id = res.locals.user.id;
 
     let doc = await User.findById(_id).exec();
+    doc = await doc.populate('completed');
+    doc = await doc.populate('inprogress');
 
     for (let i = 0; i < doc.inprogress.length; i++) {
       if (doc.inprogress[i].course == course_id) {
