@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const { authN } = require('../../middelwares/authN');
 const { whoiam } = require('../../middelwares/authZ');
-const { isPremium, isInstructor, isAdmin } = require('../../middelwares/authZ');
+const { isInstructor, isAdmin } = require('../../middelwares/authZ');
 const { imageUpload, videoUpload } = require('../../config/multer');
 const { profileView, profileUpdate, profileDelete, mycourses, enroll, learn } = require('./profile.controller');
 

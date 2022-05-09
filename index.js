@@ -3,30 +3,14 @@ const mongoose = require('mongoose');
 
 
 //Config
-const {DBURI, DBURI_remote, PORT, NODE_ENV} = require('./src/config/env.js');
+const { PORT, NODE_ENV} = require('./src/config/env.js');
 
 const port =   PORT|| 8080;
 
 // const seeder = require('./src/models/seeder.model')
 
 
-if(NODE_ENV == 'dev'){
-  mongoose.connect(DBURI)
-  .then(() => {
-    console.log('connected to database successfully');
-  })
-  .catch(() => {
-    console.log("can't connect to database");
-  });
-}else{
-  mongoose.connect(DBURI_remote)
-  .then(() => {
-    console.log('connected to database successfully');
-  })
-  .catch(() => {
-    console.log("can't connect to database");
-  });
-}
+
 
 
 //Create Application

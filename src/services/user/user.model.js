@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const validator = require('validator');
 
 //configuration
-const { TOKENKEY } = require('../../config/env');
+const { TOKENKEY, NODE_ENV} = require('../../config/env');
 const roles = require('../../config/roles');
 const membership = require('../../config/membership');
 
@@ -16,12 +15,12 @@ const userSchema = new mongoose.Schema(
     phone: { type: String },
     password: { type: String, required: [true, 'Password is required'] },
     role: { type: String, enum: [...Object.values(roles), 'Invalid role title'], default: roles.Student },
-    membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
+    membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'], default: membership.freePlan },
     inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }] }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     photo: { type: String },
   },
-  { strict: false }
+  { strict: false, timestamps: true }
 );
 
 userSchema.methods.generateToken = function (res) {
@@ -41,19 +40,11 @@ userSchema.methods.generateToken = function (res) {
   res.cookie('authorization', token, {
     maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
     sameSite: 'none',
-    secure: true,
+    secure: NODE_ENV == 'dev'? false : true,
   });
   return token;
 };
 
-userSchema.pre('save', async function (next) {
-  if (this.email && this.password) {
-    this.password = bcrypt.hashSync(this.password, 10);
-    next();
-  } else {
-    throw new Error('Email and password are REQUIRED');
-  }
-});
 
 //Exclude findOne for Login password
 userSchema.post(['save', 'find', 'findByIdAndUpdate', 'findByIdAndDelete'], function (doc, next) {

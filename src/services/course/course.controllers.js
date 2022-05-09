@@ -1,39 +1,19 @@
 const Course = require('./course.model');
-const { Instructor } = require('../../config/roles');
-const { filterByMembership } = require('../../utils/filterCourses');
+const { freePlan, premiumPlan } = require('../../config/membership');
 const { successfulRes, failedRes } = require('../../utils/response');
 
 exports.getCourses = async (req, res) => {
   try {
     let q = req.query;
-    let response;
-    const user_id = res.locals.user.id;
-    const role = res.locals.user.role;
-    const membership = res.locals.user.membership;
 
-    if (q.name) {
-      response = await Course.find({
-        name: q.name,
-      }).exec();
-    } else if (q.instructor) {
-      response = await Course.find({
-        instructor: q.instructor,
-      }).exec();
-    } else {
-      response = await Course.find({}).exec();
-    }
-
-    //filter Response
-    response = filterByMembership(response, membership, role, user_id);
+    let response = await Course.find(q).sort('-createdAt');
 
     if (response && response.length && response.length > 0) {
       for (let i = 0; i < response.length; i++) {
-        response[i] = await response[i].populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
-        response[i] = await response[i].populate({ path: 'lessons', select: 'name' });
+        response[i] = await response[i].populate({ path: 'instructor', select: 'first_name last_name email photo' });
       }
     } else {
-      response = await response.populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
-      response = await response.populate({ path: 'lessons', select: 'name' });
+      response = await response.populate({ path: 'instructor', select: 'first_name last_name email photo' });
     }
     return successfulRes(res, 200, response);
   } catch (e) {
@@ -44,15 +24,9 @@ exports.getCourses = async (req, res) => {
 exports.getCourse = async (req, res) => {
   try {
     const _id = req.params.id;
-
-    const user_id = res.locals.user.id;
-    const role = res.locals.user.role;
-    const membership = res.locals.user.membership;
     let response = await Course.findById(_id).exec();
 
-    response = filterByMembership(response, membership, role, user_id);
-
-    response = await response.populate({ path: 'instructor', select: 'first_name last_name email thumbnail' });
+    response = await response.populate({ path: 'instructor', select: 'first_name last_name email photo' });
     response = await response.populate({ path: 'lessons', select: 'name' });
 
     return successfulRes(res, 200, response);
@@ -78,6 +52,9 @@ exports.addCourse = async (req, res) => {
       photo,
     });
 
+    if (photo) {
+      saved.photo = await upload_image(photo, saved._id, 'courses_thumbs');
+    }
     await saved.save();
 
     return successfulRes(res, 201, saved);
@@ -102,7 +79,9 @@ exports.updateCourse = async (req, res) => {
       text: text ? text : doc.description.text,
       list: list ? list : doc.description.list,
     };
-    doc.photo = photo ? photo : doc.photo;
+    if (photo) {
+      doc.photo = await upload_image(photo, doc._id, 'courses_thumbs');
+    }
 
     await doc.save();
 

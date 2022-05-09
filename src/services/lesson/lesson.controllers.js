@@ -1,8 +1,10 @@
 const Course = require('../course/course.model');
 const Lesson = require('./lesson.model');
-const { filterByMembership } = require('../../utils/filterCourses');
 const { successfulRes, failedRes } = require('../../utils/response');
+const { premiumPlan } = require('../../config/membership');
+const { Instructor } = require('../../config/roles');
 
+/*
 exports.getLessons = async (req, res) => {
   try {
     const course_id = req.params.course_id;
@@ -21,23 +23,23 @@ exports.getLessons = async (req, res) => {
     return failedRes(res, 500, e);
   }
 };
+*/
 
 exports.getLesson = async (req, res) => {
   try {
-    const course_id = req.params.course_id;
+    const user = req.session.user;
     const _id = req.params.id;
 
-    const course = await Course.findById(course_id).exec();
-    if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
-    course_id = filterByMembership(course_id, membership, role, user_id);
 
-    let child_id;
-    course.lessons.forEach((e) => {
-      if (e._id == _id) child_id = e._id;
-    });
+    let doc = await Lesson.findById(_id).populate('courese');
+    if(doc.course.membership == premiumPlan || (user.role == Instructor && doc.course.instructor != user._id)){
+      const course_id = doc.course._id;
+      if(user.completed.indexOf(course_id)<0 || user.inprogress.indexOf(course_id)<0){
+        throw new Error(`You Are NOT allowed to see unpaid courses`)
+      }
+    }
 
-    const doc = await Lesson.findById(child_id).exec();
-    course = await course.populate('quizzes');
+    doc = await doc.populate('quizzes');
 
     return successfulRes(res, 200, doc);
   } catch (e) {

@@ -1,22 +1,13 @@
+const bcrypt = require('bcrypt');
 const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
+const { upload_image } = require('../../config/cloudinary');
 
 exports.getUsers = async (req, res) => {
   try {
     let q = req.query;
-    let response;
 
-    if (q.name) {
-      response = await User.find({
-        name: q.name,
-      }).exec();
-    } else if (q.role) {
-      response = await User.find({
-        role: q.role,
-      }).exec();
-    } else {
-      response = await User.find({}).exec();
-    }
+    const response = await User.find(q).sort('-createdAt');
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -51,7 +42,14 @@ exports.addUser = async (req, res) => {
       membership,
       photo,
     });
-
+    if (password) {
+      saved.password = bcrypt.hashSync(password, 10);
+    } else {
+      throw new Error('Invalid Password');
+    }
+    if (photo) {
+      saved.photo = await upload_image(photo, saved._id, 'user_thumbs');
+    }
     await saved.save();
 
     return successfulRes(res, 201, saved);
@@ -67,17 +65,21 @@ exports.updateUser = async (req, res) => {
     const photo = req.file?.path;
 
     let doc = await User.findById(_id);
-
+    if (photo) {
+      doc.thumbnail = await upload_image(photo, doc._id, 'user_thumbs');
+    }
     doc.first_name = first_name ? first_name : doc.first_name;
     doc.last_name = last_name ? last_name : doc.last_name;
     doc.email = email ? email : doc.email;
     doc.phone = phone ? phone : doc.phone;
-    doc.password = password ? password : doc.password;
     doc.role = role ? role : doc.role;
     doc.membership = membership ? membership : doc.membership;
-    doc.photo = photo ? photo : doc.photo;
-
-    const valid = doc.validateSync();
+    
+    
+    if (password) {
+      doc.password = bcrypt.hashSync(password, 10);
+    }
+    valid = doc.validateSync();
     if (valid) throw valid;
     await doc.save();
     doc.password = undefined;

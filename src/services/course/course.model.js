@@ -1,17 +1,24 @@
 const mongoose = require('mongoose');
 const membership = require('../../config/membership');
 
-const courseSchema = new mongoose.Schema({
-  name: { type: String, trim: true },
-  price: { type: Number, set: (v) => Math.round(v * 100) / 100 },
-  instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
-  description: {
-    text: { type: String },
-    list: [{ type: String }],
+const courseSchema = new mongoose.Schema(
+  {
+    name: { type: String, trim: true },
+    price: { type: Number, set: (v) => Math.round(v * 100) / 100 },
+    instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    description: {
+      text: { type: String },
+      list: [{ type: String }],
+    },
+    photo: { type: String },
+    membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
   },
-  photo: { type: String },
-  membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
-});
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
 
+courseSchema.virtual('lessons', {
+  ref: 'Lesson',
+  localField: '_id',
+  foreignField: 'course',
+});
 module.exports = mongoose.model('Course', courseSchema);

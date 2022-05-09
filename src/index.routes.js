@@ -1,8 +1,11 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const morgan = require('morgan');
-const { multer } = require('./config/multer');
+const { TOKENKEY, DBURI, DBURI_remote, NODE_ENV } = require('./config/env');
 
 const login = require('./services/login/login.routes');
 const course = require('./services/course/course.routes');
@@ -14,20 +17,49 @@ const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
-module.exports = (app) => {
+module.exports = async (app) => {
+  
+  let clientPromise;
+  if(NODE_ENV == 'dev'){
+    clientPromise = mongoose.connect(DBURI)
+    .then((conn) => {
+      console.log('connected to database successfully');
+      return conn.connection.getClient();
+    })
+    .catch(() => {
+      console.log("can't connect to database");
+    });
+  }else{
+    clientPromise = mongoose.connect(DBURI_remote)
+    .then((conn) => {
+      console.log('connected to database successfully');
+      return conn.connection.getClient();
+    })
+    .catch(() => {
+      console.log("can't connect to database");
+    });
+  }
+
   // Middlewares
-
-  /*        
-      app.use(passport.initialize());
-      app.use(passport.session());
-      */
-
-    app.use(
-      cors({
-        origin: true,
-        credentials: true,
-      })
-    );
+  app.use(
+    session({
+      secret: TOKENKEY,
+      store: MongoStore.create({ clientPromise }),
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        secure: NODE_ENV == 'dev'? false : true,
+        sameSite: 'none',
+        maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
+      },
+    })
+  );
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    })
+  );
   app.use(express.json());
   app.use(cookieParser());
 
