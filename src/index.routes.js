@@ -5,6 +5,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const morgan = require('morgan');
+const multer = require('multer');
 const { TOKENKEY, DBURI, DBURI_remote, NODE_ENV } = require('./config/env');
 
 const login = require('./services/login/login.routes');
@@ -16,7 +17,7 @@ const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
-const multer = require('multer');
+
 
 module.exports = async (app) => {
   let clientPromise;
@@ -62,7 +63,22 @@ module.exports = async (app) => {
       credentials: true,
     })
   );
-  app.use(multer().none());
+  const  unless = function(paths, middleware) {
+    return function(req, res, next) {
+      paths.forEach(e=>{
+        console.log(req.path, e)
+        if (req.path === e) {
+            return next();
+        } 
+      })
+      return middleware(req, res, next);
+    };
+};
+  app.use(unless(['/admin/course',
+                  '/admin/user',
+                  '/myprofile'
+                ], multer().none()));
+
   app.use(express.json());
   app.use(cookieParser());
 
