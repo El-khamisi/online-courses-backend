@@ -67,15 +67,16 @@ module.exports = async (app) => {
     return function(req, res, next) {
       console.log(req.path, paths.indexOf(req.path))
       paths.forEach(e=>{
-        if (e.test(req.path)) {
+        if (new RegExp(e).test(req.path)) {
             return next();
         } 
       })
+      
       return middleware(req, res, next);
     };
 };
-  app.use(unless([/\/admin\/course\/*/,
-                  /\/admin\/user\/*/,
+  app.use(unless(['/admin\/course\/*',
+                  '/admin\/user\/*',
                   '/myprofile'
                 ], multer().none()));
 
