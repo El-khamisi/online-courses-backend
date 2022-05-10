@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 
-const quizSchema = new mongoose.Schema({
-  name: { type: String, trim: true },
-  choices: { type: Map, of: String },
-  correct: String,
-  lesson: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
-  reading: { type: mongoose.Schema.Types.ObjectId, ref: 'Reading' },
-});
+const quizSchema = new mongoose.Schema(
+  {
+    name: { type: String, trim: true },
+    choices: { type: Map, of: String },
+    correct: String,
+    lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
+    readings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
+  },
+  { timestamps: true }
+);
 
 quizSchema.pre('save', function (next) {
   if (!this.choices) {

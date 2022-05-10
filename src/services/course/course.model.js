@@ -13,7 +13,7 @@ const courseSchema = new mongoose.Schema(
     },
     photo: { type: String },
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
-    level: {type: String, enum: [...Object.values(levels), 'Invalid level']}
+    level: { type: String, enum: [...Object.values(levels), 'Invalid level'] },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

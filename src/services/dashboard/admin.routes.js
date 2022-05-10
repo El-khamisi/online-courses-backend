@@ -3,7 +3,7 @@ const router = require('express').Router();
 const { authN } = require('../../middelwares/authN');
 const { isAdmin } = require('../../middelwares/authZ');
 const { imageUpload, videoUpload } = require('../../config/multer');
-const { getUsers, getUser, addUser, updateUser, deleteUser} = require('../user/user.controllers');
+const { getUsers, getUser, addUser, updateUser, deleteUser } = require('../user/user.controllers');
 const { addCourse, updateCourse, deleteCourse } = require('../course/course.controllers');
 const { addLesson, updateLesson, deleteLesson } = require('../lesson/lesson.controllers');
 const { addQuiz, updateQuiz, deleteQuiz } = require('../quiz/quiz.controllers');
@@ -27,9 +27,9 @@ router.put('/lesson/:id/course/:course_id', authN, isAdmin, updateLesson);
 router.delete('/lesson/:id/course/:course_id', authN, isAdmin, deleteLesson);
 
 //Quizzes
-router.post('/quiz/:lesson_id', authN, isAdmin, addQuiz);
-router.put('/quiz/:id/lesson/:lesson_id', authN, isAdmin, updateQuiz);
-router.delete('/quiz/:id/lesson/:lesson_id', authN, isAdmin, deleteQuiz);
+router.post('/quiz', authN, isAdmin, addQuiz);
+router.put('/quiz/:id', authN, isAdmin, updateQuiz);
+router.delete('/quiz/:id', authN, isAdmin, deleteQuiz);
 
 //Reading
 router.post('/read', authN, isAdmin, addReading);

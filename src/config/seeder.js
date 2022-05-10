@@ -1,6 +1,7 @@
 const User = require('../services/user/user.model');
 const { Admin } = require('./roles');
 const bcrypt = require('bcrypt');
+const { premiumPlan } = require('./membership');
 
 const superAdmin = async () => {
   await User.findOneAndDelete({
@@ -12,6 +13,7 @@ const superAdmin = async () => {
     email: 'admin@test.com',
     password: 'admin123',
     role: Admin,
+    membership: premiumPlan
   };
   try {
     const saved = new User(prototype);

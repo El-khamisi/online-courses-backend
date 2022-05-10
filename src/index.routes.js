@@ -18,7 +18,6 @@ const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
-
 module.exports = async (app) => {
   let clientPromise;
   if (NODE_ENV == 'dev') {
@@ -63,28 +62,24 @@ module.exports = async (app) => {
       credentials: true,
     })
   );
-  const  unless = function(paths, middleware) {
+  const unless = function (paths, middleware) {
     let flag = false;
-    return function(req, res, next) {
-      for(let i=0; i<paths.length; i++){
+    return function (req, res, next) {
+      for (let i = 0; i < paths.length; i++) {
         if (new RegExp(paths[i]).test(req.path)) {
           flag = true;
           break;
-        } 
+        }
       }
-      if(flag){
+      if (flag) {
         return next();
-      }
-      else{
-        console.log('Using multer.none')
+      } else {
+        console.log('Using multer.none');
         return middleware(req, res, next);
       }
     };
-};
-  app.use(unless(['/admin\/course\/*',
-                  '/admin\/user\/*',
-                  '/myprofile'
-                ], multer().none()));
+  };
+  app.use(unless(['/admin/course/*', '/admin/user/*', '/myprofile'], multer().none()));
 
   app.use(express.json());
   app.use(cookieParser());

@@ -1,6 +1,6 @@
 const Course = require('./course.model');
 const { successfulRes, failedRes } = require('../../utils/response');
-const {upload_image} = require('../../config/cloudinary');
+const { upload_image } = require('../../config/cloudinary');
 
 exports.getCourses = async (req, res) => {
   try {
@@ -50,7 +50,7 @@ exports.addCourse = async (req, res) => {
       },
       membership,
       photo,
-      level
+      level,
     });
 
     if (photo) {

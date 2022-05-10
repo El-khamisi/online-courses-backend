@@ -10,7 +10,7 @@ exports.regUser = async (req, res) => {
     } else {
       throw new Error('Email and password are REQUIRED');
     }
-    const saved = new User({ email, password, role });
+    let saved = new User({ email, password, role });
     await saved.save();
 
     const token = saved.generateToken(res);
