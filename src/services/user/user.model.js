@@ -27,7 +27,7 @@ userSchema.methods.generateToken = function (res) {
   const token = jwt.sign(
     {
       id: this._id,
-      name: this.firstName + ' ' + this.lastName,
+      name: this.first_name + ' ' + this.last_name,
       email: this.email,
       photo: this.photo,
       role: this.role,

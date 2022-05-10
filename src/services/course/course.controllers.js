@@ -1,5 +1,6 @@
 const Course = require('./course.model');
 const { successfulRes, failedRes } = require('../../utils/response');
+const {upload_image} = require('../../config/cloudinary');
 
 exports.getCourses = async (req, res) => {
   try {

@@ -25,6 +25,7 @@ exports.regUser = async (req, res) => {
 };
 
 exports.logUser = async (req, res) => {
+  console.log(req.body)
   let { email, password } = req.body;
   if (!email || !password) {
     return failedRes(res, 400, null, 'Email and password are REQUIRED');

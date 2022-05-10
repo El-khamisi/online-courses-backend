@@ -3,14 +3,13 @@ const router = require('express').Router();
 const { authN } = require('../../middelwares/authN');
 const { isAdmin } = require('../../middelwares/authZ');
 const { imageUpload, videoUpload } = require('../../config/multer');
-const { getUsers, getUser, addUser, updateUser, deleteUser, verify } = require('../user/user.controllers');
+const { getUsers, getUser, addUser, updateUser, deleteUser} = require('../user/user.controllers');
 const { addCourse, updateCourse, deleteCourse } = require('../course/course.controllers');
 const { addLesson, updateLesson, deleteLesson } = require('../lesson/lesson.controllers');
 const { addQuiz, updateQuiz, deleteQuiz } = require('../quiz/quiz.controllers');
 const { getReadings, getReading, addReading, updateReading, deleteReading } = require('../reading/reading.controllers');
 
 //Users
-router.get('/verify', authN, verify);
 router.get('/users', authN, isAdmin, getUsers);
 router.get('/user/:id', authN, isAdmin, getUser);
 router.post('/user', authN, isAdmin, imageUpload.single('photo'), addUser);

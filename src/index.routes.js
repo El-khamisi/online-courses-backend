@@ -16,6 +16,7 @@ const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
+const multer = require('multer');
 
 module.exports = async (app) => {
   let clientPromise;
@@ -61,6 +62,7 @@ module.exports = async (app) => {
       credentials: true,
     })
   );
+  app.use(multer().none());
   app.use(express.json());
   app.use(cookieParser());
 

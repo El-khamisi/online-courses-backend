@@ -3,6 +3,8 @@ const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const Course = require('../course/course.model');
 const { premiumPlan } = require('../../config/membership');
+const {upload_image} = require('../../config/cloudinary');
+
 
 exports.profileView = async (req, res) => {
   try {
