@@ -49,8 +49,7 @@ exports.getLesson = async (req, res) => {
 exports.addLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
-    const { name } = req.body;
-    const video = req.file?.path;
+    const { name, video } = req.body;
 
     const course = await Course.findById(course_id).exec();
     if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
@@ -74,8 +73,7 @@ exports.updateLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
     const _id = req.params.id;
-    const { name } = req.body;
-    const video = req.file?.path;
+    const { name, video } = req.body;
 
     const course = await Course.findById(course_id).exec();
     if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);

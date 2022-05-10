@@ -3,6 +3,7 @@ const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const { upload_image } = require('../../config/cloudinary');
 
+exports.verify = (req, res)=>{successfulRes(res, 200, {token: res.locals.user})}
 exports.getUsers = async (req, res) => {
   try {
     let q = req.query;

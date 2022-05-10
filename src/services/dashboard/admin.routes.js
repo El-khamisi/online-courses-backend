@@ -3,13 +3,14 @@ const router = require('express').Router();
 const { authN } = require('../../middelwares/authN');
 const { isAdmin } = require('../../middelwares/authZ');
 const { imageUpload, videoUpload } = require('../../config/multer');
-const { getUsers, getUser, addUser, updateUser, deleteUser } = require('../user/user.controllers');
+const { getUsers, getUser, addUser, updateUser, deleteUser, verify } = require('../user/user.controllers');
 const { addCourse, updateCourse, deleteCourse } = require('../course/course.controllers');
 const { addLesson, updateLesson, deleteLesson } = require('../lesson/lesson.controllers');
 const { addQuiz, updateQuiz, deleteQuiz } = require('../quiz/quiz.controllers');
 const { getReadings, getReading, addReading, updateReading, deleteReading } = require('../reading/reading.controllers');
 
 //Users
+router.get('/verify', authN, verify);
 router.get('/users', authN, isAdmin, getUsers);
 router.get('/user/:id', authN, isAdmin, getUser);
 router.post('/user', authN, isAdmin, imageUpload.single('photo'), addUser);
@@ -22,8 +23,8 @@ router.put('/course/:id', authN, isAdmin, imageUpload.single('photo'), updateCou
 router.delete('/course/:id', authN, isAdmin, deleteCourse);
 
 //Lessons
-router.post('/lesson/:course_id', authN, isAdmin, videoUpload.single('video'), addLesson);
-router.put('/lesson/:id/course/:course_id', authN, isAdmin, videoUpload.single('video'), updateLesson);
+router.post('/lesson/:course_id', authN, isAdmin, addLesson);
+router.put('/lesson/:id/course/:course_id', authN, isAdmin, updateLesson);
 router.delete('/lesson/:id/course/:course_id', authN, isAdmin, deleteLesson);
 
 //Quizzes
@@ -32,7 +33,7 @@ router.put('/quiz/:id/lesson/:lesson_id', authN, isAdmin, updateQuiz);
 router.delete('/quiz/:id/lesson/:lesson_id', authN, isAdmin, deleteQuiz);
 
 //Reading
-router.post('/reading', authN, isAdmin, addReading);
-router.put('/reading/:id', authN, isAdmin, updateReading);
-router.delete('/reading/:id', authN, isAdmin, deleteReading);
+router.post('/read', authN, isAdmin, addReading);
+router.put('/read/:id', authN, isAdmin, updateReading);
+router.delete('/read/:id', authN, isAdmin, deleteReading);
 module.exports = router;

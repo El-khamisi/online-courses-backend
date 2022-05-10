@@ -4,15 +4,8 @@ const { successfulRes, failedRes } = require('../../utils/response');
 exports.getReadings = async (req, res) => {
   try {
     let q = req.query;
-    let response;
-
-    if (q.title) {
-      response = await Reading.find({
-        title: q.title,
-      }).exec();
-    } else {
-      response = await title.find({}).exec();
-    }
+    
+    const response = await title.find(q).sort('-createdAt');
 
     return successfulRes(res, 200, response);
   } catch (e) {
@@ -24,7 +17,7 @@ exports.getReading = async (req, res) => {
   try {
     const _id = req.params.id;
 
-    const doc = await Reading.findById(course_id).exec();
+    const doc = await Reading.findById(_id).exec();
 
     return successfulRes(res, 200, doc);
   } catch (e) {
@@ -34,11 +27,12 @@ exports.getReading = async (req, res) => {
 
 exports.addReading = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, pdf } = req.body;
 
     const saved = new Reading({
       title,
       description,
+      pdf
     });
 
     await saved.save();
@@ -51,12 +45,14 @@ exports.addReading = async (req, res) => {
 exports.updateReading = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { title, description } = req.body;
+    const { title, description, pdf } = req.body;
 
     const doc = await Reading.findById(_id).exec();
 
     doc.title = title ? title : doc.title;
     doc.description = description ? description : doc.description;
+    doc.pdf = pdf ? pdf : doc.pdf;
+
 
     await doc.save();
 

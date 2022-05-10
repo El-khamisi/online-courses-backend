@@ -5,6 +5,6 @@ const readingSchema = new mongoose.Schema({
   description: { type: String },
   pdf: { type: String },
   quiz: { type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' },
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model('Reading', readingSchema);

@@ -36,7 +36,7 @@ exports.getCourse = async (req, res) => {
 
 exports.addCourse = async (req, res) => {
   try {
-    const { name, price, instructor, text, list, membership } = req.body;
+    const { name, price, instructor, text, list, membership, level } = req.body;
     const photo = req.file?.path;
 
     const saved = new Course({
@@ -49,6 +49,7 @@ exports.addCourse = async (req, res) => {
       },
       membership,
       photo,
+      level
     });
 
     if (photo) {
@@ -65,13 +66,14 @@ exports.addCourse = async (req, res) => {
 exports.updateCourse = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { name, price, instructor, text, list, membership } = req.body;
+    const { name, price, instructor, text, list, membership, level } = req.body;
     const photo = req.file?.path;
 
     let doc = await Course.findById(_id).exec();
 
     doc.name = name ? name : doc.name;
     doc.price = price ? price : doc.price;
+    doc.level = level ? level : doc.level;
     doc.instructor = instructor ? instructor : doc.instructor;
     doc.membership = membership ? membership : doc.membership;
     doc.description = {
