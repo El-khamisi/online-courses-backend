@@ -64,15 +64,17 @@ module.exports = async (app) => {
     })
   );
   const  unless = function(paths, middleware) {
+    let flag = false;
     return function(req, res, next) {
-      console.log(req.path, paths.indexOf(req.path))
       paths.forEach(e=>{
         if (new RegExp(e).test(req.path)) {
+          flag = true;
             return next();
         } 
       })
-      
-      return middleware(req, res, next);
+      if(!flag){
+        return middleware(req, res, next);
+      }
     };
 };
   app.use(unless(['/admin\/course\/*',
