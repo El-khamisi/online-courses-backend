@@ -5,7 +5,7 @@ exports.getReadings = async (req, res) => {
   try {
     let q = req.query;
     
-    const response = await title.find(q).sort('-createdAt');
+    const response = await Reading.find(q).sort('-createdAt');
 
     return successfulRes(res, 200, response);
   } catch (e) {

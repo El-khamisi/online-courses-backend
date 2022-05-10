@@ -66,13 +66,17 @@ module.exports = async (app) => {
   const  unless = function(paths, middleware) {
     let flag = false;
     return function(req, res, next) {
-      paths.forEach(e=>{
-        if (new RegExp(e).test(req.path)) {
+      for(let i=0; i<paths.length; i++){
+        if (new RegExp(paths[i]).test(req.path)) {
           flag = true;
-            return next();
+          break;
         } 
-      })
-      if(!flag){
+      }
+      if(flag){
+        return next();
+      }
+      else{
+        console.log('Using multer.none')
         return middleware(req, res, next);
       }
     };
