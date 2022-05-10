@@ -67,7 +67,7 @@ module.exports = async (app) => {
     return function(req, res, next) {
       console.log(req.path, paths.indexOf(req.path))
       paths.forEach(e=>{
-        if (paths.test(req.path)) {
+        if (e.test(req.path)) {
             return next();
         } 
       })
