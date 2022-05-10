@@ -5,7 +5,7 @@ const levels = require('../../config/levels');
 const courseSchema = new mongoose.Schema(
   {
     name: { type: String, trim: true },
-    price: { type: Number, set: (v) => Math.round(v * 100) / 100 },
+    price: { type: Number, set: (v) => Math.round(v * 100) / 100, default: 0.0 },
     instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     description: {
       text: { type: String },
