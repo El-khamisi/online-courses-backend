@@ -1,7 +1,6 @@
 const Reading = require('./reading.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const { freePlan, premiumPlan } = require('../../config/membership');
-const { Instructor } = require('../../config/roles');
 
 exports.getReadings = async (req, res) => {
   try {
