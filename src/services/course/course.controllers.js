@@ -4,17 +4,17 @@ const { upload_image } = require('../../config/cloudinary');
 
 exports.getCourses = async (req, res) => {
   try {
-    let response = await Course.aggregate([{
-      $group: { _id: '$level', courses: { $push: '$$ROOT' } },
-    }]);
 
-    // if (response && response.length && response.length > 0) {
-    //   for (let i = 0; i < response.length; i++) {
-    //     response[i] = await response[i].populate({ path: 'instructor', select: 'first_name last_name email photo' });
-    //   }
-    // } else {
-    //   response = await response.populate({ path: 'instructor', select: 'first_name last_name email photo' });
-    // }
+    let response = await Course.aggregate([
+      {
+        $group: { _id: '$level', courses: { $push: '$$ROOT' } },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+    ])
+
+
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);

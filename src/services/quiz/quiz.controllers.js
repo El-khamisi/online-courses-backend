@@ -27,17 +27,20 @@ exports.getQuiz = async (req, res) => {
 
 exports.addQuiz = async (req, res) => {
   try {
-    const { questions } = req.body;
+    const { name, questions } = req.body;
 
     const saved = new Quiz({
+      name,
       questions: [],
     });
     questions.forEach((e) => {
+      const obj = {};
+      e.options.forEach((ee)=>obj[ee.value] = ee.option_name);
+
       saved.questions.push({
         question_name: e.question_name,
-        options: e.options.map((ee) => {
-          // const value
-        }),
+        options: obj,
+        answer: e.answer.value
       });
     });
 
@@ -51,18 +54,23 @@ exports.addQuiz = async (req, res) => {
 exports.updateQuiz = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { name, choices, correct } = req.body;
+    const { name, questions } = req.body;
 
     const doc = await Quiz.findById(_id).exec();
 
     doc.name = name ? name : doc.name;
-    doc.correct = correct ? correct : doc.correct;
-    if (doc.choices) {
-      for (const [objK, objV] of Object.entries(choices)) {
-        doc.choices.forEach((mapV, mapK) => {
-          if (objK == mapK) doc.choices.set(mapK, objV);
+    if (doc.questions) {
+      questions.forEach((e) => {
+        const obj = {};
+        e.options.forEach((ee)=>obj[ee.value] = ee.option_name);
+  
+        doc.questions.push({
+          question_name: e.question_name,
+          options: obj,
+          answer: e.answer.value
         });
-      }
+      });
+  
     }
 
     await doc.save();
