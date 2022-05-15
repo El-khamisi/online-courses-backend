@@ -6,8 +6,16 @@ exports.getReadings = async (req, res) => {
   try {
     let q = req.query;
 
-    const response = await Reading.find(q).select('title').sort('-createdAt');
-
+    let response = await Reading.find(q).select('title quizzes').sort('-createdAt');
+    
+    
+    if (response.length && response.length > 0) {
+      response.forEach((e,i)=>{
+        response[i]._doc.quizzes = response[0].quizzes?.length;
+      })
+    } else {
+      response._doc.quizzes = response.quizzes?.length;
+    }
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -33,7 +41,7 @@ exports.getReading = async (req, res) => {
 exports.addReading = async (req, res) => {
   try {
     const { title, description, quizzes } = req.body;
-console.log(req.body);
+
     const saved = new Reading({
       title,
       description,
