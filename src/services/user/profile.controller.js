@@ -4,6 +4,7 @@ const { successfulRes, failedRes } = require('../../utils/response');
 const Course = require('../course/course.model');
 const { premiumPlan } = require('../../config/membership');
 const { upload_image } = require('../../config/cloudinary');
+const Quiz = require('../quiz/quiz.model');
 
 exports.profileView = async (req, res) => {
   try {
@@ -125,3 +126,24 @@ exports.learn = async (req, res) => {
     return failedRes(res, 500, e);
   }
 };
+
+exports.submitQuiz = async (req, res)=>{
+    const quiz_id = req.params.quiz_id;
+    const {questions} = req.body;
+
+  try{
+    let response = [];
+    const doc = await Quiz.findById(quiz_id).exec();
+    questions.forEach(e=>{
+      const q = doc.questions.indexOf(e._id)
+      if(q>-1){
+        response.push({question: doc.question[q], 
+          answer: e.answer == doc.question[q].answer})
+      }
+    })
+    
+    return successfulRes(res, 200, response)
+  }catch(e){
+    return failedRes(res, 500, e);
+  }
+}

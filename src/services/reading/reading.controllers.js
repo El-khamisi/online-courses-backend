@@ -33,7 +33,7 @@ exports.getReading = async (req, res) => {
 exports.addReading = async (req, res) => {
   try {
     const { title, description, quizzes } = req.body;
-
+console.log(req.body);
     const saved = new Reading({
       title,
       description,
