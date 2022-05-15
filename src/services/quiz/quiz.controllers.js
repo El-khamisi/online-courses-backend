@@ -28,14 +28,14 @@ exports.getQuiz = async (req, res) => {
 exports.addQuiz = async (req, res) => {
   try {
     const { name, questions } = req.body;
-
+console.log(req.body)
     const saved = new Quiz({
       name,
       questions: [],
     });
-    questions.forEach((e) => {
+    questions?.forEach((e) => {
       const obj = {};
-      e.options.forEach((ee)=>obj[ee.value] = ee.option_name);
+      e.options?.forEach((ee)=>obj[ee.value] = ee.option_name);
 
       saved.questions.push({
         question_name: e.question_name,
