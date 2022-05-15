@@ -5,7 +5,7 @@ exports.getQuizzes = async (req, res) => {
   try {
     const q = req.query;
 
-    const doc = await Quiz.find(q).sort('-createdAt');
+    const doc = await Quiz.find(q).sort('-createdAt').select('name');
 
     return successfulRes(res, 200, doc);
   } catch (e) {
