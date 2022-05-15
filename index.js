@@ -24,11 +24,11 @@ endpoints(app);
 
 if(NODE_ENV == 'dev'){
   app.listen(process.argv[2], () => {
-    console.log(`Production connected successfully ON PORT-${process.argv[2]}`);
+    console.log(`Development connected successfully ON PORT-${process.argv[2]}`);
   });  
 }else{
   app.listen(port, () => {
-    console.log(`connected successfully ON port-${port}`);
+    console.log(`Production connected successfully ON port-${port}`);
   });
 }
 

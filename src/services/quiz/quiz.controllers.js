@@ -27,12 +27,18 @@ exports.getQuiz = async (req, res) => {
 
 exports.addQuiz = async (req, res) => {
   try {
-    const { name, choices, correct } = req.body;
+    const { questions } = req.body;
 
     const saved = new Quiz({
-      name,
-      choices,
-      correct,
+      questions: [],
+    });
+    questions.forEach((e) => {
+      saved.questions.push({
+        question_name: e.question_name,
+        options: e.options.map((ee) => {
+          // const value
+        }),
+      });
     });
 
     await saved.save();

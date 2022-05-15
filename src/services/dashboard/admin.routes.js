@@ -7,7 +7,7 @@ const { getUsers, getUser, addUser, updateUser, deleteUser } = require('../user/
 const { addCourse, updateCourse, deleteCourse } = require('../course/course.controllers');
 const { addLesson, updateLesson, deleteLesson } = require('../lesson/lesson.controllers');
 const { addQuiz, updateQuiz, deleteQuiz } = require('../quiz/quiz.controllers');
-const {  addReading, updateReading, deleteReading } = require('../reading/reading.controllers');
+const { addReading, updateReading, deleteReading } = require('../reading/reading.controllers');
 
 //Users
 router.get('/users', authN, isAdmin, getUsers);

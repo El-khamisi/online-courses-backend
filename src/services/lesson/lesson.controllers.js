@@ -29,9 +29,9 @@ exports.getLesson = async (req, res) => {
   try {
     const user = req.session.user;
     const _id = req.params.id;
-    
+
     let doc = await Lesson.findById(_id).populate('course');
-    if ((doc.course.membership == premiumPlan) || (user.role == Instructor && doc.course.instructor != user._id)) {
+    if (doc.course.membership == premiumPlan || (user.role == Instructor && doc.course.instructor != user._id)) {
       const course_id = doc.course._id;
       if (user.completed.indexOf(course_id) < 0 || user.inprogress.indexOf(course_id) < 0) {
         throw new Error(`You Are NOT allowed to see paid courses`);
@@ -58,7 +58,7 @@ exports.addLesson = async (req, res) => {
       name,
       video,
       course: course_id,
-      quizzes
+      quizzes,
     });
 
     await saved.save();

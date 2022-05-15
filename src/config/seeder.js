@@ -13,7 +13,7 @@ const superAdmin = async () => {
     email: 'admin@test.com',
     password: 'admin123',
     role: Admin,
-    membership: premiumPlan
+    membership: premiumPlan,
   };
   try {
     const saved = new User(prototype);

@@ -24,11 +24,11 @@ module.exports = async (app) => {
     clientPromise = mongoose
       .connect(DBURI)
       .then((conn) => {
-        console.log('connected to database successfully');
+        console.log('connected to local database successfully');
         return conn.connection.getClient();
       })
       .catch(() => {
-        console.log("can't connect to database");
+        console.log("can't connect to remote database");
       });
   } else {
     clientPromise = mongoose

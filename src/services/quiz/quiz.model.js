@@ -2,9 +2,13 @@ const mongoose = require('mongoose');
 
 const quizSchema = new mongoose.Schema(
   {
-    name: { type: String, trim: true },
-    choices: { type: Map, of: String },
-    correct: String,
+    questions: [
+      {
+        question_name: { type: String },
+        options: { type: Map, of: String },
+        answer: { type: String },
+      },
+    ],
     lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
     readings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
   },
