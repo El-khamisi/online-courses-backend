@@ -6,16 +6,24 @@ exports.getReadings = async (req, res) => {
   try {
     let q = req.query;
 
-    let response = await Reading.find(q).select('title quizzes').sort('-createdAt');
     
-    
-    if (response.length && response.length > 0) {
-      response.forEach((e,i)=>{
-        response[i]._doc.quizzes = response[0].quizzes?.length;
-      })
-    } else {
-      response._doc.quizzes = response.quizzes?.length;
-    }
+    const response = await Reading.aggregate([
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $project: {
+          title: 1,
+          level: 1,
+          quizzes: {$size: '$quizzes' },
+          membership:1
+        },
+      },
+      {
+        $group: { _id: '$level', reads: { $push: '$$ROOT' } },
+      },
+    ]);
+
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -40,12 +48,14 @@ exports.getReading = async (req, res) => {
 
 exports.addReading = async (req, res) => {
   try {
-    const { title, description, quizzes } = req.body;
+    const { title, description, quizzes, membership, level } = req.body;
 
     const saved = new Reading({
       title,
       description,
       quizzes,
+      membership,
+      level
     });
 
     await saved.save();
@@ -58,12 +68,15 @@ exports.addReading = async (req, res) => {
 exports.updateReading = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { title, description } = req.body;
+    const { title, description, quizzes, membership, level } = req.body;
 
     const doc = await Reading.findById(_id).exec();
 
     doc.title = title ? title : doc.title;
     doc.description = description ? description : doc.description;
+    doc.quizzes = quizzes ? quizzes : doc.quizzes;
+    doc.membership = membership ? membership : doc.membership;
+    doc.level = level ? level : doc.level;
 
     await doc.save();
     return successfulRes(res, 200, doc);

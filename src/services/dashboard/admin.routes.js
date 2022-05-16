@@ -27,7 +27,7 @@ router.put('/lesson/:id/course/:course_id', authN, isAdmin, updateLesson);
 router.delete('/lesson/:id/course/:course_id', authN, isAdmin, deleteLesson);
 
 //Quizzes
-router.post('/quiz',  addQuiz);
+router.post('/quiz', addQuiz);
 router.put('/quiz/:id', authN, isAdmin, updateQuiz);
 router.delete('/quiz/:id', authN, isAdmin, deleteQuiz);
 

@@ -127,23 +127,22 @@ exports.learn = async (req, res) => {
   }
 };
 
-exports.submitQuiz = async (req, res)=>{
-    const quiz_id = req.params.quiz_id;
-    const {questions} = req.body;
+exports.submitQuiz = async (req, res) => {
+  const quiz_id = req.params.quiz_id;
+  const { questions } = req.body;
 
-  try{
+  try {
     let response = [];
     const doc = await Quiz.findById(quiz_id).exec();
-    questions.forEach(e=>{
-      const q = doc.questions.indexOf(e._id)
-      if(q>-1){
-        response.push({question: doc.question[q], 
-          answer: e.answer == doc.question[q].answer})
+    questions.forEach((e) => {
+      const q = doc.questions.indexOf(e._id);
+      if (q > -1) {
+        response.push({ question: doc.question[q], answer: e.answer == doc.question[q].answer });
       }
-    })
-    
-    return successfulRes(res, 200, response)
-  }catch(e){
+    });
+
+    return successfulRes(res, 200, response);
+  } catch (e) {
     return failedRes(res, 500, e);
   }
-}
+};

@@ -28,19 +28,19 @@ exports.getQuiz = async (req, res) => {
 exports.addQuiz = async (req, res) => {
   try {
     const { name, questions } = req.body;
-console.log(req.body)
+    console.log(req.body);
     const saved = new Quiz({
       name,
       questions: [],
     });
     questions?.forEach((e) => {
       const obj = {};
-      e.options?.forEach((ee)=>obj[ee.value] = ee.option_name);
+      e.options?.forEach((ee) => (obj[ee.value] = ee.option_name));
 
       saved.questions.push({
         question_name: e.question_name,
         options: obj,
-        answer: e.answer.value
+        answer: e.answer.value,
       });
     });
 
@@ -62,15 +62,14 @@ exports.updateQuiz = async (req, res) => {
     if (doc.questions) {
       questions.forEach((e) => {
         const obj = {};
-        e.options.forEach((ee)=>obj[ee.value] = ee.option_name);
-  
+        e.options.forEach((ee) => (obj[ee.value] = ee.option_name));
+
         doc.questions.push({
           question_name: e.question_name,
           options: obj,
-          answer: e.answer.value
+          answer: e.answer.value,
         });
       });
-  
     }
 
     await doc.save();

@@ -4,16 +4,14 @@ const { upload_image } = require('../../config/cloudinary');
 
 exports.getCourses = async (req, res) => {
   try {
-
     let response = await Course.aggregate([
-      {
-        $group: { _id: '$level', courses: { $push: '$$ROOT' } },
-      },
       {
         $sort: { createdAt: -1 },
       },
-    ])
-
+      {
+        $group: { _id: '$level', courses: { $push: '$$ROOT' } },
+      },
+    ]);
 
     return successfulRes(res, 200, response);
   } catch (e) {
