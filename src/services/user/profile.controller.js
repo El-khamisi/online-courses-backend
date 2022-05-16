@@ -13,7 +13,8 @@ exports.profileView = async (req, res) => {
     response.password = undefined;
 
     response = await response.populate({ path: 'completed', select: 'name instructor description photo membership' });
-    response = await response.populate({ path: 'inprogress' });
+    // response = await response.populate({ path: 'inprogress.course' });
+    response = await response.populate({ path: 'reads' });
 
     return successfulRes(res, 200, response);
   } catch (e) {
@@ -122,26 +123,6 @@ exports.learn = async (req, res) => {
     await doc.save();
     doc.password = undefined;
     return successfulRes(res, 201, doc);
-  } catch (e) {
-    return failedRes(res, 500, e);
-  }
-};
-
-exports.submitQuiz = async (req, res) => {
-  const quiz_id = req.params.quiz_id;
-  const { questions } = req.body;
-
-  try {
-    let response = [];
-    const doc = await Quiz.findById(quiz_id).exec();
-    questions.forEach((e) => {
-      const q = doc.questions.indexOf(e._id);
-      if (q > -1) {
-        response.push({ question: doc.question[q], answer: e.answer == doc.question[q].answer });
-      }
-    });
-
-    return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
   }

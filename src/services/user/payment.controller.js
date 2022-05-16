@@ -75,6 +75,8 @@ exports.paymentcb = async (req, res) => {
     if (hmac == req.query.hmac) {
       const doc = await User.findById(user._id).exec();
       doc.inprogress.push({ course: course._id, lessons: [] });
+      await doc.save();
+      return successfulRes(res, 200, doc)
     } else {
       throw new Error(`HMAC hash string not the same `);
     }

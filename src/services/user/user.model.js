@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'], default: membership.freePlan },
     inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }] }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+    reads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
     photo: { type: String },
   },
   { strict: false, timestamps: true }

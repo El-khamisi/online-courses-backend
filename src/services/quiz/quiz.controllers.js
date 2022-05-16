@@ -28,7 +28,7 @@ exports.getQuiz = async (req, res) => {
 exports.addQuiz = async (req, res) => {
   try {
     const { name, questions } = req.body;
-    console.log(req.body);
+  
     const saved = new Quiz({
       name,
       questions: [],
@@ -85,6 +85,33 @@ exports.deleteQuiz = async (req, res) => {
     const _id = req.params.id;
 
     const response = await Quiz.findByIdAndDelete(_id).exec();
+
+    return successfulRes(res, 200, response);
+  } catch (e) {
+    return failedRes(res, 500, e);
+  }
+};
+
+exports.submitQuiz = async (req, res) => {
+  const quiz_id = req.params.quiz_id;
+  const { questions } = req.body;
+
+  try {
+    let doc = await Quiz.findById(quiz_id).exec();
+    
+    doc = doc.questions;
+    let response = {answers:[], total: 0};
+    
+    questions.forEach((e) => {
+      doc.forEach((ee)=>{
+        if(e._id == ee._id){
+          response.total+= (e.answer.toUpperCase() == ee.answer);
+          response.answers.push({_id: e._id, answer: e.answer.toUpperCase()==ee.answer})
+        }
+      })
+    });
+
+    response.total = parseFloat((5/doc.length * response.total).toFixed(1))
 
     return successfulRes(res, 200, response);
   } catch (e) {
