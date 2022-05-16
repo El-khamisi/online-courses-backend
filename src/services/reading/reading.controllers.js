@@ -35,7 +35,7 @@ exports.getReading = async (req, res) => {
     const _id = req.params.id;
     const user = req.session.user;
 
-    const doc = await Reading.findById(_id).exec();
+    const doc = await Reading.findById(_id).populate('quizzes').sort('-createdAt');
     if (doc.membership == premiumPlan && user.membership == freePlan) {
       throw new Error(`You Are NOT allowed to see premium reading content`);
     }
