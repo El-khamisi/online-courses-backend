@@ -106,7 +106,7 @@ exports.submitQuiz = async (req, res) => {
       doc.forEach((ee)=>{
         if(e._id == ee._id){
           response.total+= (e.answer.toUpperCase() == ee.answer);
-          response.answers.push({_id: e._id, answer: e.answer.toUpperCase()==ee.answer})
+          response.answers.push({_id: e._id, selected: e.answer, answer: ee.answer})
         }
       })
     });

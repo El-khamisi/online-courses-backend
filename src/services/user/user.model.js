@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
   { strict: false, timestamps: true }
 );
 
-userSchema.methods.generateToken = function (res) {
+userSchema.methods.generateToken = function (req, res) {
   const token = jwt.sign(
     {
       id: this._id,
@@ -38,6 +38,7 @@ userSchema.methods.generateToken = function (res) {
     { expiresIn: '24h' }
   );
 
+  req.session.user = this;
   res.cookie('authorization', token, {
     maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
     sameSite: 'none',

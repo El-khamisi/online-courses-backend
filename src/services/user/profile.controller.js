@@ -1,20 +1,36 @@
 const bcrypt = require('bcrypt');
+const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const Course = require('../course/course.model');
 const { premiumPlan } = require('../../config/membership');
 const { upload_image } = require('../../config/cloudinary');
-const Quiz = require('../quiz/quiz.model');
 
 exports.profileView = async (req, res) => {
   try {
     const _id = res.locals.user.id;
-    let response = await User.findById(_id).exec();
-    response.password = undefined;
+    console.log(req.session.user)
+    const response = await User.aggregate([
+      {
+        $match: {_id: ObjectId(_id)}
+      },
+      {
+        $unset: ['password', 'createdAt', 'updatedAt', '__v']
+      },
+      {
+        $lookup:{
+          from: 'courses',
+          localField: 'completed',
+          foreignField: '_id',
+          pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
+          as: 'completed'
+        }
+      }
+    ])
 
-    response = await response.populate({ path: 'completed', select: 'name instructor description photo membership' });
+    // response = await response.populate({ path: 'completed', select: 'name instructor description photo membership' });
     // response = await response.populate({ path: 'inprogress.course' });
-    response = await response.populate({ path: 'reads' });
+    // response = await response.populate({ path: 'reads' });
 
     return successfulRes(res, 200, response);
   } catch (e) {
@@ -36,7 +52,8 @@ exports.profileUpdate = async (req, res) => {
     doc.last_name = last_name ? last_name : doc.last_name;
     doc.email = email ? email : doc.email;
     doc.phone = phone ? phone : doc.phone;
-    if (password) {
+    if (password) {res.redirect('post/new')
+
       doc.password = bcrypt.hashSync(password, 10);
     }
 

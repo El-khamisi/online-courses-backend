@@ -13,12 +13,13 @@ exports.regUser = async (req, res) => {
     let saved = new User({ first_name, last_name, email, password });
     await saved.save();
 
-    const token = saved.generateToken(res);
-    saved = await saved.populate('completed');
-    saved = await saved.populate('inprogress');
-    saved.password = undefined;
-    req.session.user = saved;
-    return successfulRes(res, 201, { token });
+    const token = saved.generateToken(req, res);
+    logged.completed = undefined;
+    logged.reads = undefined;
+    logged.inprogress = undefined;
+    logged.password = undefined;
+
+    return successfulRes(res, 201, { user: saved, token });
   } catch (e) {
     return failedRes(res, 500, e);
   }
@@ -42,12 +43,13 @@ exports.logUser = async (req, res) => {
     if (!logged || !matched) {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     }
-    const token = logged.generateToken(res);
-    logged = await logged.populate('completed');
-    logged = await logged.populate('inprogress');
+    const token = logged.generateToken(req, res);
+    logged.completed = undefined;
+    logged.reads = undefined;
+    logged.inprogress = undefined;
     logged.password = undefined;
-    req.session.user = logged;
-    return successfulRes(res, 200, { token });
+    
+    return successfulRes(res, 200, {user:logged, token });
   } catch (e) {
     return failedRes(res, 500, e);
   }
