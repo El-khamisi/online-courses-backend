@@ -14,6 +14,7 @@ const courseSchema = new mongoose.Schema(
     photo: { type: String },
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
     level: { type: String, enum: [...Object.values(levels), 'Invalid level'] },
+    quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }],
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -21,6 +22,7 @@ const courseSchema = new mongoose.Schema(
 courseSchema.virtual('lessons', {
   ref: 'Lesson',
   localField: '_id',
-  foreignField: 'course',
+  foreignField: 'course'
 });
+
 module.exports = mongoose.model('Course', courseSchema);

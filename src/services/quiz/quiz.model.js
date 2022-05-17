@@ -10,8 +10,6 @@ const quizSchema = new mongoose.Schema(
         answer: { type: String },
       },
     ],
-    lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
-    readings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
   },
   { timestamps: true }
 );

@@ -44,8 +44,11 @@ exports.logUser = async (req, res) => {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     }
     const token = logged.generateToken(req, res);
-    logged.completed = undefined;
-    logged.reads = undefined;
+     
+    logged = await logged.populate({ path: 'completed', select: 'name' });
+    logged = await logged.populate({ path: 'reads', select: 'title'});
+
+
     logged.inprogress = undefined;
     logged.password = undefined;
     

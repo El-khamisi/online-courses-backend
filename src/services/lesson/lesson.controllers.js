@@ -38,8 +38,6 @@ exports.getLesson = async (req, res) => {
       }
     }
 
-    doc = await doc.populate('quizzes');
-
     return successfulRes(res, 200, doc);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -49,7 +47,7 @@ exports.getLesson = async (req, res) => {
 exports.addLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
-    const { name, video, quizzes } = req.body;
+    const { name, video } = req.body;
 
     const course = await Course.findById(course_id).exec();
     if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
@@ -57,8 +55,7 @@ exports.addLesson = async (req, res) => {
     const saved = new Lesson({
       name,
       video,
-      course: course_id,
-      quizzes,
+      course: course_id
     });
 
     await saved.save();

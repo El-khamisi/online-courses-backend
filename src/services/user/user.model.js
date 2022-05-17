@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: [true, 'Password is required'] },
     role: { type: String, enum: [...Object.values(roles), 'Invalid role title'], default: roles.Student },
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'], default: membership.freePlan },
-    inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }] }],
+    inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }] }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     reads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
     photo: { type: String },

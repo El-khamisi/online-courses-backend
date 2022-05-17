@@ -22,8 +22,17 @@ exports.profileView = async (req, res) => {
           from: 'courses',
           localField: 'completed',
           foreignField: '_id',
-          pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
+          pipeline: [{$project: { description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
           as: 'completed'
+        }
+      },
+      {
+        $lookup:{
+          from: 'courses',
+          localField: 'inprogress',
+          foreignField: '_id',
+          pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
+          as: 'inprogress'
         }
       },
       {

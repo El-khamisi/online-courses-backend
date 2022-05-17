@@ -9,6 +9,9 @@ exports.getCourses = async (req, res) => {
         $sort: { createdAt: -1 },
       },
       {
+        $unset: ['description', 'quizzes']
+      },
+      {
         $group: { _id: '$level', courses: { $push: '$$ROOT' } },
       },
     ]);
@@ -35,7 +38,7 @@ exports.getCourse = async (req, res) => {
 
 exports.addCourse = async (req, res) => {
   try {
-    const { name, price, instructor, text, list, membership, level } = req.body;
+    const { name, price, instructor, text, list, membership, level, quizzes } = req.body;
     const photo = req.file?.path;
 
     const saved = new Course({
@@ -49,6 +52,7 @@ exports.addCourse = async (req, res) => {
       membership,
       photo,
       level,
+      quizzes
     });
 
     if (photo) {
@@ -65,7 +69,7 @@ exports.addCourse = async (req, res) => {
 exports.updateCourse = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { name, price, instructor, text, list, membership, level } = req.body;
+    const { name, price, instructor, text, list, membership, level, quizzes } = req.body;
     const photo = req.file?.path;
 
     let doc = await Course.findById(_id).exec();
@@ -79,6 +83,8 @@ exports.updateCourse = async (req, res) => {
       text: text ? text : doc.description.text,
       list: list ? list : doc.description.list,
     };
+    doc.quizzes = quizzes ? quizzes : doc.quizzes;
+
     if (photo) {
       doc.photo = await upload_image(photo, doc._id, 'courses_thumbs');
     }
