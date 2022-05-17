@@ -4,13 +4,13 @@ const { successfulRes, failedRes } = require('../../utils/response');
 
 exports.regUser = async (req, res) => {
   try {
-    let { email, password, role } = req.body;
+    let { first_name, last_name, email, password} = req.body;
     if (email && password) {
       password = bcrypt.hashSync(password, 10);
     } else {
       throw new Error('Email and password are REQUIRED');
     }
-    let saved = new User({ email, password, role });
+    let saved = new User({ first_name, last_name, email, password });
     await saved.save();
 
     const token = saved.generateToken(res);
