@@ -14,10 +14,10 @@ exports.regUser = async (req, res) => {
     await saved.save();
 
     const token = saved.generateToken(req, res);
-    logged.completed = undefined;
-    logged.reads = undefined;
-    logged.inprogress = undefined;
-    logged.password = undefined;
+    saved.completed = undefined;
+    saved.reads = undefined;
+    saved.inprogress = undefined;
+    saved.password = undefined;
 
     return successfulRes(res, 201, { user: saved, token });
   } catch (e) {
