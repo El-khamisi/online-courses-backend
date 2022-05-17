@@ -9,7 +9,7 @@ const { upload_image } = require('../../config/cloudinary');
 exports.profileView = async (req, res) => {
   try {
     const _id = res.locals.user.id;
-    console.log(req.session.user)
+  
     const response = await User.aggregate([
       {
         $match: {_id: ObjectId(_id)}
@@ -24,6 +24,15 @@ exports.profileView = async (req, res) => {
           foreignField: '_id',
           pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
           as: 'completed'
+        }
+      },
+      {
+        $lookup:{
+          from: 'readings',
+          localField: 'reads',
+          foreignField: '_id',
+          pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
+          as: 'reads'
         }
       }
     ])
