@@ -22,7 +22,7 @@ exports.profileView = async (req, res) => {
           from: 'courses',
           localField: 'completed',
           foreignField: '_id',
-          pipeline: [{$project: { description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
+          pipeline: [{$project: { name:1, price: 1, photo: 1, membership: 1, level: 1, quizzes: 1}}, {$addFields: {quizzes:{$size: '$quizzes'}}}],
           as: 'completed'
         }
       },
