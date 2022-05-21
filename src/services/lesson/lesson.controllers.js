@@ -59,9 +59,10 @@ exports.addLesson = async (req, res) => {
         video: e.youtube_url,
         course: course_id
       });
-      await saved.save();
       response.push(saved);
+      await saved.save();
       course.lessons.push(saved._id);
+      
     })
 
     await course.save();
