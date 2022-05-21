@@ -47,8 +47,8 @@ exports.getLesson = async (req, res) => {
 exports.addLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
-    const body = req.body;
-console.log(body)
+    const body = req.body['0'];
+
     const course = await Course.findById(course_id).exec();
     if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
 
