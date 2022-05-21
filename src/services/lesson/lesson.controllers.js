@@ -47,19 +47,23 @@ exports.getLesson = async (req, res) => {
 exports.addLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
-    const { name, video } = req.body;
+    const body = req.body;
 
     const course = await Course.findById(course_id).exec();
     if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
 
-    const saved = new Lesson({
-      name,
-      video,
-      course: course_id
-    });
+    let response = [];
+    body.forEach(async e=>{
+      const saved = new Lesson({
+        name: e.name,
+        video: e.youtube_url,
+        course: course_id
+      });
+      await saved.save();
+      response.push(saved);
+      course.lessons.push(saved._id);
+    })
 
-    await saved.save();
-    course.lessons.push(saved._id);
     await course.save();
     return successfulRes(res, 201, saved);
   } catch (e) {
