@@ -65,7 +65,7 @@ exports.addLesson = async (req, res) => {
     })
 
     await course.save();
-    return successfulRes(res, 201, saved);
+    return successfulRes(res, 201, response);
   } catch (e) {
     return failedRes(res, 500, e);
   }
