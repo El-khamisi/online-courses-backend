@@ -44,6 +44,13 @@ module.exports = async (app) => {
 
   // Middlewares
   app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    })
+  );
+  
+  app.use(
     session({
       secret: TOKENKEY,
       store: MongoStore.create({ clientPromise }),
@@ -54,12 +61,6 @@ module.exports = async (app) => {
         sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
       },
-    })
-  );
-  app.use(
-    cors({
-      origin: true,
-      credentials: true,
     })
   );
   const unless = function (paths, middleware) {
