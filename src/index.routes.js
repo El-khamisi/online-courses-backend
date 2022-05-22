@@ -62,7 +62,7 @@ module.exports = async (app) => {
       resave: false,
       saveUninitialized: true,
       cookie: {
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
         sameSite: NODE_ENV == 'dev'? false : 'none',
         secure: NODE_ENV == 'dev' ? false : true,
