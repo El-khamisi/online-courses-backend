@@ -19,6 +19,10 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
 module.exports = async (app) => {
+  app.use(cookieParser());
+  app.use(express.json());
+  app.use(morgan('dev'));
+
   let clientPromise;
   if (NODE_ENV == 'dev') {
     clientPromise = mongoose
@@ -57,7 +61,6 @@ module.exports = async (app) => {
       resave: false,
       saveUninitialized: true,
       cookie: {
-        httpOnly: false,
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
         sameSite: NODE_ENV == 'dev'? '' : 'none',
         secure: NODE_ENV == 'dev' ? false : true,
@@ -83,12 +86,8 @@ module.exports = async (app) => {
   };
   app.use(unless(['/admin/course/*', '/admin/user/*', '/myprofile'], multer().none()));
 
-  app.use(express.json());
-  app.use(cookieParser());
-
+  
   //Routers
-  app.use(morgan('dev'));
-
   app.use(login);
   app.use(dashboard);
   app.use(course);
