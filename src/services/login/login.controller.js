@@ -32,7 +32,8 @@ exports.logUser = async (req, res) => {
   
   console.log('Cookie: ', req.cookies)
   console.log('Sessions: ', req.session)
-  console.log('Sessions: ', req.session.cupcake)
+  console.log('Cupcake: ', req.session.cupcake)
+  console.log('User: ', req.session.user)
   if (!email || !password) {
     return failedRes(res, 400, null, 'Email and password are REQUIRED');
   }
@@ -41,7 +42,7 @@ exports.logUser = async (req, res) => {
     let logged = await User.findOne({
       email,
     }).exec();
-    req.session.user = saved;
+    req.session.user = logged;
     if (!logged) {
       return failedRes(res, 400, null, 'Email is invalid');
     }
