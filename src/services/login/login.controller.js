@@ -1,10 +1,12 @@
 const User = require('../user/user.model');
 const bcrypt = require('bcrypt');
 const { successfulRes, failedRes } = require('../../utils/response');
+const { sign, serialize } = require('../../utils/cookie');
+const { TOKENKEY, NODE_ENV } = require('../../config/env');
 
 exports.regUser = async (req, res) => {
   try {
-    let { first_name, last_name, email, password} = req.body;
+    let { first_name, last_name, email, password } = req.body;
     if (email && password) {
       password = bcrypt.hashSync(password, 10);
     } else {
@@ -27,8 +29,7 @@ exports.regUser = async (req, res) => {
 
 exports.logUser = async (req, res) => {
   let { email, password } = req.body;
-  
-  
+
   if (!email || !password) {
     return failedRes(res, 400, null, 'Email and password are REQUIRED');
   }
@@ -37,7 +38,7 @@ exports.logUser = async (req, res) => {
     let logged = await User.findOne({
       email,
     }).exec();
-    
+
     if (!logged) {
       return failedRes(res, 400, null, 'Email is invalid');
     }
@@ -45,18 +46,27 @@ exports.logUser = async (req, res) => {
     const matched = bcrypt.compareSync(password, logged.password);
     if (!logged || !matched) {
       return failedRes(res, 400, null, 'Email or Password is invalid');
-    }else{
-
+    } else {
       const token = logged.generateToken(req, res);
-      
 
+  
+  var signed = 's:' + sign(req.sessionID, TOKENKEY);
+  var data = serialize('s_id', signed, req.session.cookie.data);
+
+  const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
+
+  res.cookie('s_id', cook, {
+    maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
+    sameSite: NODE_ENV == 'dev' ? false : 'none',
+    secure: NODE_ENV == 'dev' ? false : true,
+  });
+  
       logged.inprogress = undefined;
       logged.password = undefined;
-      return successfulRes(res, 200, {user:logged, token });
-    }     
+      return successfulRes(res, 200, { user: logged, token });
+    }
     // logged = await logged.populate({ path: 'completed', select: 'name' });
     // logged = await logged.populate({ path: 'reads', select: 'title'});
-
   } catch (e) {
     return failedRes(res, 500, e);
   }

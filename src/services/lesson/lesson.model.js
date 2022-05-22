@@ -6,9 +6,6 @@ const lessonSchema = new mongoose.Schema({
   course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
 });
 
-
-
-
 // quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }],
 
 module.exports = mongoose.model('Lesson', lessonSchema);

@@ -20,12 +20,12 @@ exports.getQuiz = async (req, res) => {
 
     const doc = await Quiz.aggregate([
       {
-        $match: {_id: ObjectId(_id)}
+        $match: { _id: ObjectId(_id) },
       },
       {
-        $unset: ['questions.answer', 'createdAt', 'updatedAt', '__v']
+        $unset: ['questions.answer', 'createdAt', 'updatedAt', '__v'],
       },
-    ])
+    ]);
 
     return successfulRes(res, 200, doc);
   } catch (e) {
@@ -36,7 +36,7 @@ exports.getQuiz = async (req, res) => {
 exports.addQuiz = async (req, res) => {
   try {
     const { name, questions } = req.body;
-  
+
     const saved = new Quiz({
       name,
       questions: [],
@@ -106,20 +106,20 @@ exports.submitQuiz = async (req, res) => {
 
   try {
     let doc = await Quiz.findById(quiz_id).exec();
-    
+
     doc = doc.questions;
-    let response = {answers:[], total: 0};
-    
+    let response = { answers: [], total: 0 };
+
     questions.forEach((e) => {
-      doc.forEach((ee)=>{
-        if(e._id == ee._id){
-          response.total+= (e.answer.toUpperCase() == ee.answer);
-          response.answers.push({_id: e._id, selected: e.answer, answer: ee.answer})
+      doc.forEach((ee) => {
+        if (e._id == ee._id) {
+          response.total += e.answer.toUpperCase() == ee.answer;
+          response.answers.push({ _id: e._id, selected: e.answer, answer: ee.answer });
         }
-      })
+      });
     });
 
-    response.total = parseFloat((5/doc.length * response.total).toFixed(1))
+    response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
 
     return successfulRes(res, 200, response);
   } catch (e) {

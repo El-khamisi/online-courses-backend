@@ -9,7 +9,7 @@ exports.getCourses = async (req, res) => {
         $sort: { createdAt: -1 },
       },
       {
-        $unset: ['description', 'quizzes']
+        $unset: ['description', 'quizzes'],
       },
       {
         $group: { _id: '$level', courses: { $push: '$$ROOT' } },
@@ -52,7 +52,7 @@ exports.addCourse = async (req, res) => {
       membership,
       photo,
       level,
-      quizzes
+      quizzes,
     });
 
     if (photo) {

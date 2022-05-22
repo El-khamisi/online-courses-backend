@@ -9,42 +9,42 @@ const { upload_image } = require('../../config/cloudinary');
 exports.profileView = async (req, res) => {
   try {
     const _id = res.locals.user.id;
-  
+
     const response = await User.aggregate([
       {
-        $match: {_id: ObjectId(_id)}
+        $match: { _id: ObjectId(_id) },
       },
       {
-        $unset: ['password', 'createdAt', 'updatedAt', '__v']
+        $unset: ['password', 'createdAt', 'updatedAt', '__v'],
       },
       {
-        $lookup:{
+        $lookup: {
           from: 'courses',
           localField: 'completed',
           foreignField: '_id',
-          pipeline: [{$project: { name:1, price: 1, photo: 1, membership: 1, level: 1, quizzes: 1}}, {$addFields: {quizzes:{$size: '$quizzes'}}}],
-          as: 'completed'
-        }
+          pipeline: [{ $project: { name: 1, price: 1, photo: 1, membership: 1, level: 1, quizzes: 1 } }, { $addFields: { quizzes: { $size: '$quizzes' } } }],
+          as: 'completed',
+        },
       },
       {
-        $lookup:{
+        $lookup: {
           from: 'courses',
           localField: 'inprogress',
           foreignField: '_id',
-          pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
-          as: 'inprogress'
-        }
+          pipeline: [{ $project: { description: 0, createdAt: 0, updatedAt: 0, __v: 0 } }],
+          as: 'inprogress',
+        },
       },
       {
-        $lookup:{
+        $lookup: {
           from: 'readings',
           localField: 'reads',
           foreignField: '_id',
-          pipeline: [{$project: {description: 0, createdAt: 0, updatedAt: 0, __v: 0}}],
-          as: 'reads'
-        }
-      }
-    ])
+          pipeline: [{ $project: { description: 0, createdAt: 0, updatedAt: 0, __v: 0 } }],
+          as: 'reads',
+        },
+      },
+    ]);
 
     // response = await response.populate({ path: 'completed', select: 'name instructor description photo membership' });
     // response = await response.populate({ path: 'inprogress.course' });
@@ -70,7 +70,8 @@ exports.profileUpdate = async (req, res) => {
     doc.last_name = last_name ? last_name : doc.last_name;
     doc.email = email ? email : doc.email;
     doc.phone = phone ? phone : doc.phone;
-    if (password) {res.redirect('post/new')
+    if (password) {
+      res.redirect('post/new');
 
       doc.password = bcrypt.hashSync(password, 10);
     }

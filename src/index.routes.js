@@ -19,7 +19,7 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
 module.exports = async (app) => {
-  // app.use(cookieParser());
+  app.use(cookieParser());
   app.use(express.json());
   app.use(morgan('dev'));
 
@@ -53,7 +53,7 @@ module.exports = async (app) => {
       credentials: true,
     })
   );
-  
+
   app.use(
     session({
       name: 's_id',
@@ -63,9 +63,9 @@ module.exports = async (app) => {
       saveUninitialized: true,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-        sameSite: NODE_ENV == 'dev'? '' : 'none',
+        sameSite: NODE_ENV == 'dev' ? '' : 'none',
         secure: NODE_ENV == 'dev' ? false : true,
-        httpOnly: false
+        httpOnly: false,
       },
     })
   );
@@ -87,7 +87,6 @@ module.exports = async (app) => {
     };
   };
   app.use(unless(['/admin/course/*', '/admin/user/*', '/myprofile'], multer().none()));
-
 
   //Routers
   app.use(login);

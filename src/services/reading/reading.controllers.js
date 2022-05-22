@@ -6,7 +6,6 @@ exports.getReadings = async (req, res) => {
   try {
     let q = req.query;
 
-    
     const response = await Reading.aggregate([
       {
         $sort: { createdAt: -1 },
@@ -15,8 +14,8 @@ exports.getReadings = async (req, res) => {
         $project: {
           title: 1,
           level: 1,
-          quizzes: {$size: '$quizzes' },
-          membership:1
+          quizzes: { $size: '$quizzes' },
+          membership: 1,
         },
       },
       {
@@ -34,13 +33,12 @@ exports.getReading = async (req, res) => {
   try {
     const _id = req.params.id;
     const user = req.session.user;
-console.log(user)
+    console.log(user);
     const doc = await Reading.findById(_id).populate('quizzes').sort('-createdAt');
-    
+
     if (doc && doc.membership == premiumPlan && user.membership == freePlan) {
       throw new Error(`You Are NOT allowed to see premium reading content`);
     }
-    
 
     return successfulRes(res, 200, doc);
   } catch (e) {
@@ -57,7 +55,7 @@ exports.addReading = async (req, res) => {
       description,
       quizzes,
       membership,
-      level
+      level,
     });
 
     await saved.save();

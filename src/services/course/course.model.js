@@ -22,7 +22,7 @@ const courseSchema = new mongoose.Schema(
 courseSchema.virtual('lessons', {
   ref: 'Lesson',
   localField: '_id',
-  foreignField: 'course'
+  foreignField: 'course',
 });
 
 module.exports = mongoose.model('Course', courseSchema);
