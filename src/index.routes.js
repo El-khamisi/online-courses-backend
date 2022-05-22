@@ -19,7 +19,7 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
 module.exports = async (app) => {
-  // app.use(cookieParser());
+  app.use(cookieParser());
   app.use(express.json());
   app.use(morgan('dev'));
 
@@ -56,13 +56,15 @@ module.exports = async (app) => {
   
   app.use(
     session({
+      name: 's_id',
       secret: TOKENKEY,
       store: MongoStore.create({ clientPromise }),
       resave: false,
       saveUninitialized: true,
       cookie: {
+        httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-        sameSite: NODE_ENV == 'dev'? '' : 'none',
+        sameSite: NODE_ENV == 'dev'? false : 'none',
         secure: NODE_ENV == 'dev' ? false : true,
       },
     })
