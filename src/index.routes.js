@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const session = require('cookie-session');
+const session = require('express-session');
 const morgan = require('morgan');
 const multer = require('multer');
 const { TOKENKEY, DBURI, DBURI_remote, NODE_ENV } = require('./config/env');
@@ -57,17 +57,16 @@ module.exports = async (app) => {
   app.use(
     session({
       name: 's_id',
-      keys: [TOKENKEY],
-      // store: MongoStore.create({ clientPromise }),
-      // resave: false,
-      // saveUninitialized: true,
-      httpOnly: false,
-      maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-      sameSite: NODE_ENV == 'dev'? false : 'latex',
-      secure: NODE_ENV == 'dev' ? false : true,
-      domain: 'https://textgenuss.herokuapp.com'
-    // sameSite: 'none',
-    // secure: true
+      secret: TOKENKEY,
+      store: MongoStore.create({ clientPromise }),
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
+        sameSite: NODE_ENV == 'dev'? '' : 'none',
+        secure: NODE_ENV == 'dev' ? false : true,
+        httpOnly: false
+      },
     })
   );
   const unless = function (paths, middleware) {
