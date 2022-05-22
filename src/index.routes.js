@@ -58,8 +58,8 @@ module.exports = async (app) => {
       saveUninitialized: true,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-        secure: NODE_ENV == 'dev' ? false : true,
         sameSite: NODE_ENV == 'dev'? '' : 'none',
+        secure: NODE_ENV == 'dev' ? false : true,
       },
     })
   );
