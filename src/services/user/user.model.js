@@ -38,12 +38,12 @@ userSchema.methods.generateToken = function (req, res) {
     { expiresIn: '24h' }
   );
 
-  req.session.user = this;
   res.cookie('authorization', token, {
     maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
     sameSite: 'none',
     secure: NODE_ENV == 'dev' ? false : true,
   });
+  req.session.user = this;
   return token;
 };
 

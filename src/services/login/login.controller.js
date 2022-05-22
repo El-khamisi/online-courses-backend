@@ -42,17 +42,16 @@ exports.logUser = async (req, res) => {
     const matched = bcrypt.compareSync(password, logged.password);
     if (!logged || !matched) {
       return failedRes(res, 400, null, 'Email or Password is invalid');
-    }
-    const token = logged.generateToken(req, res);
-     
-    logged = await logged.populate({ path: 'completed', select: 'name' });
-    logged = await logged.populate({ path: 'reads', select: 'title'});
+    }else{
 
+      const token = logged.generateToken(req, res);
+      logged.inprogress = undefined;
+      logged.password = undefined;
+      return successfulRes(res, 200, {user:logged, token });
+    }     
+    // logged = await logged.populate({ path: 'completed', select: 'name' });
+    // logged = await logged.populate({ path: 'reads', select: 'title'});
 
-    logged.inprogress = undefined;
-    logged.password = undefined;
-    
-    return successfulRes(res, 200, {user:logged, token });
   } catch (e) {
     return failedRes(res, 500, e);
   }
