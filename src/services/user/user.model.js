@@ -40,7 +40,7 @@ userSchema.methods.generateToken = function (req, res) {
 
   res.cookie('authorization', token, {
     maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-    sameSite: 'none',
+    sameSite: NODE_ENV == 'dev'? '' : 'none',
     secure: NODE_ENV == 'dev' ? false : true,
   });
   req.session.user = this;
