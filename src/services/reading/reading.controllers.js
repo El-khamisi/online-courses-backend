@@ -34,11 +34,13 @@ exports.getReading = async (req, res) => {
   try {
     const _id = req.params.id;
     const user = req.session.user;
-
+console.log(user)
     const doc = await Reading.findById(_id).populate('quizzes').sort('-createdAt');
-    if (doc.membership == premiumPlan && user.membership == freePlan) {
+    
+    if (doc && doc.membership == premiumPlan && user.membership == freePlan) {
       throw new Error(`You Are NOT allowed to see premium reading content`);
     }
+    
 
     return successfulRes(res, 200, doc);
   } catch (e) {
