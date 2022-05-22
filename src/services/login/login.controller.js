@@ -13,7 +13,6 @@ exports.regUser = async (req, res) => {
     let saved = new User({ first_name, last_name, email, password });
     await saved.save();
 
-    req.session.user = saved;
     const token = saved.generateToken(req, res);
     saved.completed = undefined;
     saved.reads = undefined;
@@ -28,12 +27,8 @@ exports.regUser = async (req, res) => {
 
 exports.logUser = async (req, res) => {
   let { email, password } = req.body;
-  req.session.cupcake = {name: 'apple', age: 15}
   
-  console.log('Cookie: ', req.cookies)
-  console.log('Sessions: ', req.session)
-  console.log('Cupcake: ', req.session.cupcake)
-  console.log('User: ', req.session.user)
+  
   if (!email || !password) {
     return failedRes(res, 400, null, 'Email and password are REQUIRED');
   }
@@ -42,7 +37,7 @@ exports.logUser = async (req, res) => {
     let logged = await User.findOne({
       email,
     }).exec();
-    req.session.user = logged;
+    
     if (!logged) {
       return failedRes(res, 400, null, 'Email is invalid');
     }
@@ -53,7 +48,7 @@ exports.logUser = async (req, res) => {
     }else{
 
       const token = logged.generateToken(req, res);
-      req.session.user = saved;
+      
 
       logged.inprogress = undefined;
       logged.password = undefined;
