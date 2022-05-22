@@ -45,7 +45,7 @@ module.exports = async (app) => {
   // Middlewares
   app.use(
     cors({
-      origin: 'http://localhost:3000',
+      origin: ['http://localhost:3000', 'https://textgenuss.net'],
       credentials: true,
     })
   );

@@ -1,4 +1,5 @@
 const Quiz = require('./quiz.model');
+const ObjectId = require('mongoose').Types.ObjectId;
 const { successfulRes, failedRes } = require('../../utils/response');
 
 exports.getQuizzes = async (req, res) => {
@@ -17,7 +18,14 @@ exports.getQuiz = async (req, res) => {
   try {
     const _id = req.params.id;
 
-    const doc = await Quiz.findById(_id).exec();
+    const doc = await Quiz.aggregate([
+      {
+        $match: {_id: ObjectId(_id)}
+      },
+      {
+        $unset: ['questions.answer', 'createdAt', 'updatedAt', '__v']
+      },
+    ])
 
     return successfulRes(res, 200, doc);
   } catch (e) {
