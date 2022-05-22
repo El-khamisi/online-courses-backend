@@ -19,7 +19,7 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 
 module.exports = async (app) => {
-  app.use(cookieParser());
+  // app.use(cookieParser());
   app.use(express.json());
   app.use(morgan('dev'));
 
