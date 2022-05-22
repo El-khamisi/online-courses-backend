@@ -58,13 +58,14 @@ module.exports = async (app) => {
     session({
       name: 's_id',
       secret: TOKENKEY,
-      store: MongoStore.create({ clientPromise }),
-      resave: false,
-      saveUninitialized: true,
+      // store: MongoStore.create({ clientPromise }),
+      // resave: false,
+      // saveUninitialized: true,
       httpOnly: false,
       maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
       sameSite: NODE_ENV == 'dev'? false : 'none',
       secure: NODE_ENV == 'dev' ? false : true,
+      
     })
   );
   const unless = function (paths, middleware) {
