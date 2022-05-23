@@ -48,19 +48,10 @@ exports.logUser = async (req, res) => {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     } else {
       const token = logged.generateToken(req, res);
-      const signed = 's:' + sign(req.sessionID, TOKENKEY);
-      const data = serialize('s_id', signed, req.session.cookie.data);
-      //
-      if (NODE_ENV != 'dev') data += '; Secure; SameSite=None';
-      const prev = res.getHeader('Set-Cookie') || [];
-
-      var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
-      // const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
-
-      res.setHeader('Set-Cookie', header);
-
+  
       logged.inprogress = undefined;
       logged.password = undefined;
+      
       return successfulRes(res, 200, { user: logged, token });
     }
     // logged = await logged.populate({ path: 'completed', select: 'name' });

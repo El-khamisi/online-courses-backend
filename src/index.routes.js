@@ -17,6 +17,7 @@ const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
+const { sign, serialize } = require('./utils/cookie');
 
 module.exports = async (app) => {
   app.use(cookieParser());
@@ -63,13 +64,27 @@ module.exports = async (app) => {
       saveUninitialized: true,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-        // sameSite: NODE_ENV == 'dev' ? '' : 'none',
-        // secure: NODE_ENV == 'dev' ? false : true,
-        // sameSite: 'none',
-        // secure: true,
+        sameSite: NODE_ENV == 'dev' ? '' : 'none',
+        secure: NODE_ENV == 'dev' ? false : true,
         httpOnly: false,
       },
-    })
+    }),
+    (req, res, next) => {
+      
+      console.log('req', req.cookies)
+      if(!req.cookies.s_id){
+        const signed = 's:' + sign(req.sessionID, TOKENKEY);
+        let data = serialize('s_id', signed, req.session.cookie.data);
+        //
+        if (NODE_ENV != 'dev') data += '; Secure; SameSite=None';
+        const prev = res.getHeader('Set-Cookie') || [];
+        var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
+        // const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
+  
+        res.setHeader('Set-Cookie', header);
+      }
+      return next();
+    }
   );
   const unless = function (paths, middleware) {
     let flag = false;
