@@ -88,7 +88,7 @@ exports.serialize = function (name, val, options) {
   }
 
   return str;
-}
+};
 
 exports.sign = function (val, secret) {
   if ('string' != typeof val) throw new TypeError('Cookie value must be provided as a string.');
