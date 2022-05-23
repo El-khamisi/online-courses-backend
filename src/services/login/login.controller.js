@@ -52,15 +52,25 @@ exports.logUser = async (req, res) => {
   
   var signed = 's:' + sign(req.sessionID, TOKENKEY);
   var data = serialize('s_id', signed, req.session.cookie.data);
+  if(NODE_ENV != 'dev')
+    data+= '; Secure; SameSite=None';
+  var prev = res.getHeader('Set-Cookie') || []
 
-  const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
+  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
 
-  res.cookie('s_id', cook, {
-    maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
-    sameSite: NODE_ENV == 'dev' ? false : 'none',
-    secure: NODE_ENV == 'dev' ? false : true,
-  });
+
+  // const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
   
+  
+  res.setHeader('Set-Cookie', header)
+
+  // , {
+  //   maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
+  //   sameSite: NODE_ENV == 'dev' ? false : 'none',
+  //   secure: NODE_ENV == 'dev' ? false : true,
+  // });
+  // console.log('mai', data);
+  console.log('mai', res.getHeader('Set-Cookie'));
       logged.inprogress = undefined;
       logged.password = undefined;
       return successfulRes(res, 200, { user: logged, token });
