@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     reads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
     photo: { type: String },
     quizzes: [{
-      name: String, date: {type:Date, default: Date.now()}, 
+      name: String, date: Date, 
       socre: {type: Number, set: v=>Math.round(v*10)/10}
       }]
   },

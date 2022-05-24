@@ -124,9 +124,15 @@ exports.submitQuiz = async (req, res) => {
 
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
     const usr = await User.findById(user_id).exec();
-    usr.quizzes.push({name: docname, score: response.total});
+    // usr.quizzes.push({name: docname, score: response.total});
+     usr.quizzes.push ({name: docname, date: (()=> {
+        const date = new Date(); date.setHours(date.getHours()+2);
+        return date
+      })(), 
+      score: response.total})
+
     usr.save();
-    console.log(doc)
+    
 
     return successfulRes(res, 200, response);
   } catch (e) {
