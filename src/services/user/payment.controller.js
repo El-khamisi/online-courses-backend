@@ -69,7 +69,7 @@ exports.paymentcb = async (req, res) => {
     const conString = `${Object.values(hmacKeys)}`.replaceAll(',', '');
     const hmac = createHmac('SHA512', PAYMOB_HMAC).update(conString).digest('hex');
     if (!hmacKeys.success) {
-      throw new Error('The payment process has failed');
+      throw new Error('The payment process has been failed');
     }
 
     if (hmac == req.query.hmac) {

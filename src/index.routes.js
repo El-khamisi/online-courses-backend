@@ -17,6 +17,7 @@ const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
+const planes = require('./utils/planes.routes');
 const { sign, serialize } = require('./utils/cookie');
 
 module.exports = async (app) => {
@@ -71,7 +72,6 @@ module.exports = async (app) => {
     }),
     (req, res, next) => {
       
-      console.log('req', req.cookies)
       if(!req.cookies.s_id){
         const signed = 's:' + sign(req.sessionID, TOKENKEY);
         let data = serialize('s_id', signed, req.session.cookie.data);
@@ -116,4 +116,5 @@ module.exports = async (app) => {
 
   app.use(membership);
   app.use(role);
+  app.use(planes);
 };

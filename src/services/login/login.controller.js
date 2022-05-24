@@ -20,6 +20,8 @@ exports.regUser = async (req, res) => {
     saved.reads = undefined;
     saved.inprogress = undefined;
     saved.password = undefined;
+    saved.quizzes = undefined;
+
 
     return successfulRes(res, 201, { user: saved, token });
   } catch (e) {
@@ -49,8 +51,11 @@ exports.logUser = async (req, res) => {
     } else {
       const token = logged.generateToken(req, res);
   
+      logged.completed = undefined;
+      logged.reads = undefined;
       logged.inprogress = undefined;
       logged.password = undefined;
+      logged.quizzes = undefined;
       
       return successfulRes(res, 200, { user: logged, token });
     }

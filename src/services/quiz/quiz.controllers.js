@@ -1,6 +1,7 @@
 const Quiz = require('./quiz.model');
 const ObjectId = require('mongoose').Types.ObjectId;
 const { successfulRes, failedRes } = require('../../utils/response');
+const User = require('../user/user.model');
 
 exports.getQuizzes = async (req, res) => {
   try {
@@ -103,6 +104,8 @@ exports.deleteQuiz = async (req, res) => {
 exports.submitQuiz = async (req, res) => {
   const quiz_id = req.params.quiz_id;
   const { questions } = req.body;
+  const user_id = res.locals.user.id;
+
 
   try {
     let doc = await Quiz.findById(quiz_id).exec();
@@ -120,6 +123,9 @@ exports.submitQuiz = async (req, res) => {
     });
 
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
+    const usr = await User.findById(user_id).exec();
+    usr.quizzes.push({name: doc.name, score: response.total});
+    usr.save();
 
     return successfulRes(res, 200, response);
   } catch (e) {
