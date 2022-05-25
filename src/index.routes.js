@@ -17,9 +17,10 @@ const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
-const planes = require('./services/planes/planes.routes');
+const plans = require('./services/plans/plans.routes');
 
 const { sign, serialize } = require('./utils/cookie');
+const { initPlans } = require('./services/plans/plans.model');
 
 module.exports = async (app) => {
   app.use(cookieParser());
@@ -48,6 +49,7 @@ module.exports = async (app) => {
         console.log("can't connect to database");
       });
   }
+  initPlans();
 
   // Middlewares
   app.use(
@@ -72,8 +74,7 @@ module.exports = async (app) => {
       },
     }),
     (req, res, next) => {
-      
-      if(!req.cookies.s_id){
+      if (!req.cookies.s_id) {
         const signed = 's:' + sign(req.sessionID, TOKENKEY);
         let data = serialize('s_id', signed, req.session.cookie.data);
         //
@@ -81,7 +82,7 @@ module.exports = async (app) => {
         const prev = res.getHeader('Set-Cookie') || [];
         var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
         // const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
-  
+
         res.setHeader('Set-Cookie', header);
       }
       return next();
@@ -117,5 +118,5 @@ module.exports = async (app) => {
 
   app.use(membership);
   app.use(role);
-  app.use(planes);
+  app.use(plans);
 };

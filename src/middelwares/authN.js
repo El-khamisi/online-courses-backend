@@ -7,9 +7,7 @@ exports.authN = (req, res, next) => {
     if (!(req.get('Authorization') || req.cookies.authorization)) {
       throw new Error('Login first');
     }
-    const token = req.get('Authorization')
-    ? req.get('Authorization').split(' ')[1]
-    :  req.cookies.authorization; 
+    const token = req.get('Authorization') ? req.get('Authorization').split(' ')[1] : req.cookies.authorization;
 
     const verify = jwt.verify(token, TOKENKEY);
     res.locals.user = verify;

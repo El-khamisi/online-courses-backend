@@ -22,7 +22,6 @@ exports.regUser = async (req, res) => {
     saved.password = undefined;
     saved.quizzes = undefined;
 
-
     return successfulRes(res, 201, { user: saved, token });
   } catch (e) {
     return failedRes(res, 500, e);
@@ -50,13 +49,13 @@ exports.logUser = async (req, res) => {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     } else {
       const token = logged.generateToken(req, res);
-  
+
       logged.completed = undefined;
       logged.reads = undefined;
       logged.inprogress = undefined;
       logged.password = undefined;
       logged.quizzes = undefined;
-      
+
       return successfulRes(res, 200, { user: logged, token });
     }
     // logged = await logged.populate({ path: 'completed', select: 'name' });

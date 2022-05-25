@@ -20,10 +20,13 @@ const userSchema = new mongoose.Schema(
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     reads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reading' }],
     photo: { type: String },
-    quizzes: [{
-      name: String, date: Date, 
-      socre: {type: Number, set: v=>Math.round(v*10)/10}
-      }]
+    quizzes: [
+      {
+        name: String,
+        date: Date,
+        socre: { type: Number, set: (v) => Math.round(v * 10) / 10 },
+      },
+    ],
   },
   { strict: false, timestamps: true }
 );
