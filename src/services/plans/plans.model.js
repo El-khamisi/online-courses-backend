@@ -10,13 +10,13 @@ const plansSchema = new mongoose.Schema({
   name: { type: String, trim: true, enum: [...Object.values(plansNames), 'Invalid Plan Name'], required: [true, 'Name of plane is required'], unique: true },
   list: { type: [String] },
   price: { type: Number, set: (v) => Math.round(v * 100) / 100, required: [true, 'Provide valid Price'] },
-  priceEGP: {type: Number, default: 0.0},
-  rateEGP: {type: Date, default: '2022-05-25'}
+  priceEGP: { type: Number, default: 0.0 },
+  rateEGP: { type: Date, default: '2022-05-25' },
 });
 
 const initPlans = async () => {
   const plan = await mongoose.connection.models.Plan.find().exec();
-  
+
   for (const value of Object.values(plansNames)) {
     if (!plan.some((e) => e.name == value)) {
       let preprice;
