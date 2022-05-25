@@ -12,6 +12,9 @@ exports.getPlans = async (req, res) => {
       const date = gdate.toISOString().split('T')[0]
       console.log(docDate, date)
       console.log(docDate < date)
+      if(docDate < date){
+
+      }
     }
 
     return successfulRes(res, 200, doc);
@@ -19,3 +22,22 @@ exports.getPlans = async (req, res) => {
     return failedRes(res, 500, e);
   }
 };
+
+exports.editPlans = async (req, res)=>{
+  const body = req.body;
+  try{
+    
+    let response = [];
+    body.forEach(async e=>{
+      const doc = await planModel.findByIdAndUpdate(e._id, {
+        list: e.list,
+        price: e.price 
+      }, {new: true});  
+    });
+
+
+    return successfulRes(res, 200, response);
+  }catch(e){
+    return failedRes(res, 500, e)
+  }
+}
