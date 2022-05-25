@@ -17,7 +17,8 @@ const dashboard = require('./services/dashboard/index.routes');
 const membership = require('./services/membership/membership.routes');
 const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
-const planes = require('./utils/planes.routes');
+const planes = require('./services/planes/planes.routes');
+
 const { sign, serialize } = require('./utils/cookie');
 
 module.exports = async (app) => {
