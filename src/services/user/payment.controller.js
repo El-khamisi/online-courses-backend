@@ -8,17 +8,26 @@ exports.payment = async (req, res) => {
   const step1Url = 'https://accept.paymob.com/api/auth/tokens';
   const step2Url = 'https://accept.paymob.com/api/ecommerce/orders';
   const step3Url = 'https://accept.paymob.com/api/acceptance/payment_keys';
-  const user = req.session.user;
+  // const user = req.session.user;
+  const user = {
+    first_name: 'cup',
+    last_name: 'cake',
+    email: 'mohammd.sayd@gmail.com',
+    phone: '01016191997'
+  }
   const course = req.session.course;
   try {
     const step1 = await axios.post(step1Url, {
       api_key: PAYMOB_APIKEY,
     });
+    
     const auth_token = step1.data.token;
     const step2 = await axios.post(step2Url, {
       auth_token,
       delivery_needed: false,
-      amount_cents: course.price * 100,
+      // amount_cents: course.price * 100,
+      amount_cents: 100,
+      
       currency: 'EGP',
       items: [],
     });
@@ -26,7 +35,9 @@ exports.payment = async (req, res) => {
 
     const step3 = await axios.post(step3Url, {
       auth_token,
-      amount_cents: course.price * 100,
+      // amount_cents: course.price * 100,
+      amount_cents: 100,
+
       currency: 'EGP',
       expiration: 3600, //One hour
       order_id,
@@ -47,8 +58,10 @@ exports.payment = async (req, res) => {
         state: 'NA',
       },
     });
+    
+    const url = `https://accept.paymob.com/api/acceptance/iframes/377914?payment_token=${step3.data.token}`
 
-    return successfulRes(res, 200, step3.data);
+    return successfulRes(res, 200, url);
   } catch (e) {
     return failedRes(res, 500, e);
   }
