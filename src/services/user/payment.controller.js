@@ -59,9 +59,9 @@ exports.payment = async (req, res) => {
       },
     });
     
-    const url = `https://accept.paymob.com/api/acceptance/iframes/377914?payment_token=${step3.data.token}`
+    // const url = `https://accept.paymob.com/api/acceptance/iframes/377914?payment_token=${step3.data.token}`
 
-    return successfulRes(res, 200, url);
+    return successfulRes(res, 200, {token: step3.data.token});
   } catch (e) {
     return failedRes(res, 500, e);
   }
