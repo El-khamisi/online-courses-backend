@@ -15,6 +15,8 @@ const courseSchema = new mongoose.Schema(
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'] },
     level: { type: String, enum: [...Object.values(levels), 'Invalid level'] },
     quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }],
+    priceEGP: { type: Number, set: (v) => Math.round(v * 100) / 100 },
+    rateEGP: { type: Date },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

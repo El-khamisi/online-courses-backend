@@ -18,5 +18,5 @@ router.post('/subscribe', authN, enroll);
 router.post('/learn/:course_id/lesson/:lesson_id', authN, learn);
 
 router.post('/pay', authN, payment);
-router.post('/paycb', authN, paymentcb);
+router.post('/paycb', paymentcb);
 module.exports = router;

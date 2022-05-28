@@ -14,4 +14,6 @@ module.exports = {
   PAYMOB_APIKEY: process.env.PAYMOB_APIKEY,
   PAYMOB_integration_id: process.env.PAYMOB_integration_id,
   PAYMOB_HMAC: process.env.PAYMOB_HMAC,
+
+  exchange_api: process.env.exchange_api,
 };

@@ -27,17 +27,30 @@ exports.getLessons = async (req, res) => {
 
 exports.getLesson = async (req, res) => {
   try {
-    const user = req.session.user;
-    const _id = req.params.id;
+    const course_id = req.params.course_id;
+    const lesson_id = req.params.lesson_id;
+    const _id = res.locals.user.id;
 
-    let doc = await Lesson.findById(_id).populate('course');
-    if (doc.course.membership == premiumPlan || (user.role == Instructor && doc.course.instructor != user._id)) {
-      const course_id = doc.course._id;
-      if (user.completed.indexOf(course_id) < 0 || user.inprogress.indexOf(course_id) < 0) {
-        throw new Error(`You Are NOT allowed to see paid courses`);
+    let user = await User.findById(_id).exec();
+    user = await user.populate('completed');
+    user = await user.populate('inprogress');
+
+    const course = await Course.findById(course_id).exec();
+    if (course.membership == premiumPlan || (user.role == Instructor && course.instructor != user._id)) {
+      if (doc.completed.includes(course_id)) {
+        let doc = await Lesson.findById(lesson_id).exec();
+        return successfulRes(res, 200, doc);
       }
+      for (let i = 0; i < user.inprogress.length; i++) {
+        if (user.inprogress[i].course == course_id) {
+          let doc = await Lesson.findById(lesson_id).exec();
+          return successfulRes(res, 200, doc);
+        }
+      }
+      throw new Error ('You are not allowed to view this lesson');
     }
 
+    const doc = await Lesson.findById(lesson_id).exec();
     return successfulRes(res, 200, doc);
   } catch (e) {
     return failedRes(res, 500, e);
