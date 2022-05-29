@@ -1,7 +1,7 @@
 const { plansNames } = require('../services/plans/plans.model');
 
 exports.subscribe = (plan) => {
-  if (!Object.values(plansNames).includes(plane)) {
+  if (!Object.values(plansNames).includes(plan)) {
     throw new Error(`Provide valid plan name-${plan}`);
   }
 

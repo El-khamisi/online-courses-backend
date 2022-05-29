@@ -1,10 +1,16 @@
 const axios = require('axios');
 const crypto = require('crypto');
-const { PAYMOB_APIKEY, PAYMOB_integration_id, PAYMOB_HMAC, exchange_api } = require('../../config/env');
+const { PAYMOB_APIKEY, PAYMOB_integration_id, PAYMOB_HMAC, exchange_api, NODE_ENV } = require('../../config/env');
+const { premiumPlan } = require('../../config/membership');
 const { failedRes, successfulRes } = require('../../utils/response');
 const Course = require('../course/course.model');
 const { planModel } = require('../plans/plans.model');
+const { subscribe } = require('../../utils/subscribe');
 const User = require('./user.model');
+
+let planPeriod = {};
+let user, course;
+
 
 exports.payment = async (req, res) => {
   const step1Url = 'https://accept.paymob.com/api/auth/tokens';
@@ -14,9 +20,9 @@ exports.payment = async (req, res) => {
   const { user_id, package_id, course_id } = req.body;
 
   try {
-    let user = await User.findById(user_id).exec();
+    user = await User.findById(user_id).exec();
 
-    const phone = '01016191997';
+    const phone = user.phone || '01016191997';
 
     let order;
     if ((course_id && package_id) || (!course_id && !package_id)) {
@@ -24,6 +30,7 @@ exports.payment = async (req, res) => {
     }
     if (course_id) {
       order = await Course.findById(course_id).exec();
+      course = order;
     } else {
       order = await planModel.findById(package_id).exec();
     }
@@ -48,26 +55,21 @@ exports.payment = async (req, res) => {
       api_key: PAYMOB_APIKEY,
     });
 
+    package_id ? (planPeriod.name = order.name) : '';
+    package_id ? (planPeriod.expire = subscribe(order.name)) : '';
+    const item = {
+      name: course_id ? course_id : package_id,
+      description: course_id ? `Payment for course enrollment` : `Payment for premium plan ${order.name} subscription`,
+      amount_cents: order.priceEGP * 100,
+      quantity: 1,
+    };
     const auth_token = step1.data.token;
     const step2 = await axios.post(step2Url, {
       auth_token,
       delivery_needed: false,
       amount_cents: order.priceEGP * 100,
       currency: 'EGP',
-      items: [
-      {
-        name: 'Payment for premium plan subscription',
-        description: package_id,
-        amount_cents: 5000,
-        quantity: 1,
-      },
-      {
-        name: 'Payment for course enrollment',
-        description: course_id,
-        amount_cents: 5000,
-        quantity: 1,
-      }
-      ],
+      items: [item],
     });
     const order_id = step2.data.id;
     const step3 = await axios.post(step3Url, {
@@ -94,6 +96,7 @@ exports.payment = async (req, res) => {
       },
     });
 
+     
     return successfulRes(res, 200, { payment_token: step3.data.token });
   } catch (e) {
     return failedRes(res, 500, e);
@@ -101,18 +104,22 @@ exports.payment = async (req, res) => {
 };
 
 exports.paymentcb = async (req, res) => {
-  const user = req.session.user;
-  const course = req.session.course;
+
 
   try {
     const { order, source_data } = req.body.obj;
-    console.log(req.body.obj.order.items);
-return successfulRes(res, 200, req.body);
+
     //prettier-ignore
-    const hmacKeys = ({ amount_cents, created_at, currency, error_occured, 
-      has_parent_transaction, id, integration_id, is_3d_secure, is_auth, 
-      is_capture, is_refunded, is_standalone_payment, is_voided, order, owner, 
-      pending, pan, sub_type, type, success } = req.body.obj);
+    const { amount_cents, created_at, currency, error_occured, has_parent_transaction,
+      id, integration_id, is_3d_secure, is_auth, is_capture, is_refunded, 
+      is_standalone_payment, is_voided, owner, pending, 
+      success } = req.body.obj;
+    //prettier-ignore
+
+    const hmacKeys = { amount_cents, created_at, currency, error_occured, has_parent_transaction,
+      id, integration_id, is_3d_secure, is_auth, is_capture, is_refunded, 
+      is_standalone_payment, is_voided, owner, pending, 
+      success } 
 
     hmacKeys.order = order.id;
     hmacKeys.pan = source_data.pan;
@@ -120,21 +127,35 @@ return successfulRes(res, 200, req.body);
     hmacKeys.type = source_data.type;
 
     const conString = `${Object.values(hmacKeys)}`.replaceAll(',', '');
-    const hmac = createHmac('SHA512', PAYMOB_HMAC).update(conString).digest('hex');
+    const hmac =crypto.createHmac('SHA512', PAYMOB_HMAC).update(conString).digest('hex');
+
+    console.log(hmacKeys);
+
     if (hmacKeys.success) {
-      const doc = await User.findById(user._id).exec();
-      
+      let doc = await User.findById(user._id).exec();
+
+      if (req.body.obj.order.items[0].description.includes('course')) {
+        doc.inprogress.push({ course: course._id, quizzes: [] });
+      } else {
+        doc.membership = premiumPlan;
+        doc.end_of_membership = planPeriod.expire;
+      }
+
       await doc.save();
-    }else{
+    } else {
       throw new Error('The payment process has been failed');
     }
-
+console.log(hmac);
     if (hmac == req.query.hmac) {
-      return successfulRes(res, 200, 'Payment has been successful' );
+      NODE_ENV == 'dev'?  console.log('HMAC is valid'): '';
+      res.end();
     } else {
       throw new Error(`HMAC hash string not the same `);
     }
   } catch (e) {
-    return failedRes(res, 500, e);
+    console.log(e);
+    NODE_ENV == 'dev'?  console.log(e): '';
+
+    res.end();
   }
 };

@@ -3,6 +3,7 @@ const Lesson = require('./lesson.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const { premiumPlan } = require('../../config/membership');
 const { Instructor } = require('../../config/roles');
+const User = require('../user/user.model');
 
 /*
 exports.getLessons = async (req, res) => {
@@ -36,22 +37,27 @@ exports.getLesson = async (req, res) => {
     user = await user.populate('inprogress');
 
     const course = await Course.findById(course_id).exec();
-    if (course.membership == premiumPlan || (user.role == Instructor && course.instructor != user._id)) {
-      if (doc.completed.includes(course_id)) {
-        let doc = await Lesson.findById(lesson_id).exec();
-        return successfulRes(res, 200, doc);
-      }
-      for (let i = 0; i < user.inprogress.length; i++) {
-        if (user.inprogress[i].course == course_id) {
-          let doc = await Lesson.findById(lesson_id).exec();
-          return successfulRes(res, 200, doc);
+    let doc;
+    if (course.membership == premiumPlan && course.instructor != user._id) {
+    
+      if (user.completed.includes(course_id)) {
+        doc = await Lesson.findById(lesson_id).exec();
+      } 
+      if(!doc){
+        for (let i = 0; i < user.inprogress.length; i++) {
+          if (user.inprogress[i].course == course_id) {
+            doc = await Lesson.findById(lesson_id).exec();
+            break;
+          }
         }
       }
-      throw new Error ('You are not allowed to view this lesson');
+      if(!doc){
+        throw new Error('You are not allowed to view this lesson');
+      }
+    } else {
+      doc = await Lesson.findById(lesson_id).exec();
     }
-
-    const doc = await Lesson.findById(lesson_id).exec();
-    return successfulRes(res, 200, doc);
+    return successfulRes (res, 200, doc);
   } catch (e) {
     return failedRes(res, 500, e);
   }

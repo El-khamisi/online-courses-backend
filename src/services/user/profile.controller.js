@@ -122,8 +122,9 @@ exports.enroll = async (req, res) => {
       if (course.membership == premiumPlan) {
         req.session.course = course;
         res.redirect('/pay');
+      } else {
+        doc.inprogress.push({ course: course_id, lessons: [] });
       }
-      doc.inprogress.push({ course: course_id, lessons: [] });
     }
 
     await doc.save();
