@@ -124,14 +124,28 @@ exports.submitQuiz = async (req, res) => {
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
     const usr = await User.findById(user_id).exec();
     
-    usr.quizzes.push({
-      name: docname,
-      date: (() => {
-        const date = new Date().toISOString().split('T')[0];
-        return date;
-      })(),
-      score: response.total,
-    });
+    let flag = false;
+    for(const obj of usr.quizzes){
+      if(obj._id == quiz_id){
+        obj.date =  (()=>new Date())();
+        obj.score = response.total;
+        flag = true;
+        break;
+      }
+    }
+
+    if(flag == false){
+      usr.quizzes.push({
+        _id: quiz_id,
+        name: docname,
+        date: (() => {
+          const date = new Date();
+          return date;
+        })(),
+        score: response.total,
+      });
+
+    }
 
     usr.save();
 
