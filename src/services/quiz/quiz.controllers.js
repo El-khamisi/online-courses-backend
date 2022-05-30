@@ -127,8 +127,7 @@ exports.submitQuiz = async (req, res) => {
     usr.quizzes.push({
       name: docname,
       date: (() => {
-        const date = new Date();
-        date.setHours(date.getHours() + 2);
+        const date = new Date().toISOString().split('T')[0];
         return date;
       })(),
       score: response.total,
