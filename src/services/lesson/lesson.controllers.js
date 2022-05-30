@@ -10,29 +10,24 @@ exports.getLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
     const lesson_id = req.params.lesson_id;
-    const _id = res.locals.user.id;
+    const user = req.session.user;
+    let doc;
 
-    let user = await User.findById(_id).exec();
-    user = await user.populate('completed');
-    user = await user.populate('inprogress');
 
     const course = await Course.findById(course_id).exec();
-    let doc;
-    if (course.membership == premiumPlan && course.instructor != user._id) {
+    if(!course){
+      throw new Error(`Can NOT find a Course with ID-${course_id}`);
+    }
+    else if (course.membership == premiumPlan && course.instructor != user._id) {
     
-      if (user.completed.includes(course_id)) {
-        doc = await Lesson.findById(lesson_id).exec();
-      } 
-      if(!doc){
-        for (let i = 0; i < user.inprogress.length; i++) {
-          if (user.inprogress[i].course == course_id) {
-            doc = await Lesson.findById(lesson_id).exec();
-            break;
-          }
-        }
+      const tempProgress = user.inprogress.map((e)=>e.course);
+      if(tempProgress.includes(course_id) || user.completed.includes(course_id)){
+        doc = await Lesson.findById(lesson_id).exec();  
       }
+
       if(!doc){
-        throw new Error('You are not allowed to view this lesson');
+        throw new Error(`You are not allowed to view this lesson \
+OR there is no such lesson with ID-${lesson_id}`);
       }
     } else {
       doc = await Lesson.findById(lesson_id).exec();

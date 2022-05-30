@@ -9,7 +9,7 @@ const { subscribe } = require('../../utils/subscribe');
 const User = require('./user.model');
 
 let planPeriod = {};
-let user, course;
+let guser, course;
 
 
 exports.payment = async (req, res) => {
@@ -20,8 +20,9 @@ exports.payment = async (req, res) => {
   const { user_id, package_id, course_id } = req.body;
 
   try {
-    user = await User.findById(user_id).exec();
+    let user = req.session.user;
 
+    guser = user;
     const phone = user.phone || '01016191997';
 
     let order;
@@ -37,7 +38,7 @@ exports.payment = async (req, res) => {
 
     let priceInEGP = order.price;
 
-    const docDate = order.rateEGP.toISOString().split('T')[0];
+    const docDate = order.rateEGP?.toISOString().split('T')[0];
     const date = new Date().toISOString().split('T')[0];
     if (docDate < date || !order.priceEGP) {
       priceInEGP = await axios.get(`https://api.apilayer.com/exchangerates_data/convert?from=USD&to=EGP&amount=${order.price}`, {
@@ -110,19 +111,21 @@ exports.paymentcb = async (req, res) => {
     
     //prettier-ignore
     const { pending, success } = req.body.obj;
-    
-
-
-
+    const user = guser;
 
     if (success) {
       let doc = await User.findById(user._id).exec();
 
       if (req.body.obj.order.items[0].description.includes('course')) {
         doc.inprogress.push({ course: course._id, quizzes: [] });
+        user.inprogress.push({ course: course._id, quizzes: [] });
+
       } else {
         doc.membership = premiumPlan;
         doc.end_of_membership = planPeriod.expire;
+
+        user.membership = premiumPlan;
+        user.end_of_membership = planPeriod.expire;
       }
 
       await doc.save();
@@ -130,6 +133,7 @@ exports.paymentcb = async (req, res) => {
       throw new Error('The payment process has been failed');
     }
 
+    res.end();
   } catch (e) {
     console.log(e);
     NODE_ENV == 'dev'?  console.log(e): '';

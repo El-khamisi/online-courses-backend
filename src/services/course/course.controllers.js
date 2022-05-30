@@ -9,7 +9,7 @@ exports.getCourses = async (req, res) => {
         $sort: { createdAt: -1 },
       },
       {
-        $unset: ['description', 'quizzes'],
+        $unset: ['description', 'quizzes', 'lessons'],
       },
       {
         $group: { _id: '$level', courses: { $push: '$$ROOT' } },

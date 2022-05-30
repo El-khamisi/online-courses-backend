@@ -29,7 +29,7 @@ exports.profileView = async (req, res) => {
       {
         $lookup: {
           from: 'courses',
-          localField: 'inprogress',
+          localField: 'inprogress.course',
           foreignField: '_id',
           pipeline: [{ $project: { description: 0, createdAt: 0, updatedAt: 0, __v: 0 } }],
           as: 'inprogress',
@@ -46,9 +46,6 @@ exports.profileView = async (req, res) => {
       },
     ]);
 
-    // response = await response.populate({ path: 'completed', select: 'name instructor description photo membership' });
-    // response = await response.populate({ path: 'inprogress.course' });
-    // response = await response.populate({ path: 'reads' });
 
     return successfulRes(res, 200, response[0]);
   } catch (e) {
@@ -103,65 +100,29 @@ exports.profileDelete = async (req, res) => {
 exports.enroll = async (req, res) => {
   try {
     const course_id = req.params.course_id;
-    const _id = res.locals.user.id;
+    const user = req.session.user;
 
-    let doc = await User.findById(_id).exec();
-    doc = await doc.populate('completed');
-    doc = await doc.populate('inprogress');
 
-    doc.completed.forEach((e) => {
+    user.completed.forEach((e) => {
       if (e == course_id) throw new Error('Your have already completed to this course');
     });
+    user.inprogress.forEach((e) => {
+      if (e.course == course_id) throw new Error('Your have already enrolled to this course');
+    });
+
 
     const course = Course.findById(course_id).exec();
-    let enrolled = false;
-    doc.inprogress.forEach((e) => {
-      if (e.course == course_id) enrolled = true;
-    });
-    if (!enrolled) {
-      if (course.membership == premiumPlan) {
-        req.session.course = course;
-        res.redirect('/pay');
-      } else {
-        doc.inprogress.push({ course: course_id, lessons: [] });
-      }
+    if (course.membership == premiumPlan && course.instructor != user._id) {
+      throw new Error('You should pay to enroll to premium courses');
+    } else {
+      const doc = await User.findByIdAndUpdate(user._id, { 
+        $push: { inprogress: {course: course_id, quizzes: []} } 
+      }).exec();
+      user.inprogress.push({ course: course_id, quizzes: [] });
+
+      return res.redirect(`/course/${course_id}`)
     }
 
-    await doc.save();
-    doc.password = undefined;
-    return successfulRes(res, 201, course_id);
-  } catch (e) {
-    return failedRes(res, 500, e);
-  }
-};
-
-exports.learn = async (req, res) => {
-  try {
-    const course_id = req.params.course_id;
-    const lesson_id = req.params.lesson_id;
-    const _id = res.locals.user.id;
-
-    let doc = await User.findById(_id).exec();
-    doc = await doc.populate('completed');
-    doc = await doc.populate('inprogress');
-
-    for (let i = 0; i < doc.inprogress.length; i++) {
-      if (doc.inprogress[i].course == course_id) {
-        let bool = false;
-        for (let j = 0; j < doc.inprogress[i].lessons.length; j++) {
-          if (doc.inprogress[i].lessons[j] == lesson_id) {
-            bool = true;
-            break;
-          }
-        }
-        if (!bool) doc.inprogress[i].lessons.push(lesson_id);
-        break;
-      }
-    }
-
-    await doc.save();
-    doc.password = undefined;
-    return successfulRes(res, 201, doc);
   } catch (e) {
     return failedRes(res, 500, e);
   }
