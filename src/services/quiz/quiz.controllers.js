@@ -147,7 +147,7 @@ exports.submitQuiz = async (req, res) => {
 
     }
 
-    usr.save();
+    await usr.save();
 
     return successfulRes(res, 200, response);
   } catch (e) {
