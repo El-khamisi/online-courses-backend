@@ -50,7 +50,7 @@ exports.profileView = async (req, res) => {
     // response = await response.populate({ path: 'inprogress.course' });
     // response = await response.populate({ path: 'reads' });
 
-    return successfulRes(res, 200, response);
+    return successfulRes(res, 200, response[0]);
   } catch (e) {
     return failedRes(res, 500, e);
   }

@@ -5,26 +5,6 @@ const { premiumPlan } = require('../../config/membership');
 const { Instructor } = require('../../config/roles');
 const User = require('../user/user.model');
 
-/*
-exports.getLessons = async (req, res) => {
-  try {
-    const course_id = req.params.course_id;
-    const user_id = res.locals.user.id;
-    const role = res.locals.user.role;
-    const membership = res.locals.user.membership;
-
-    let course = await Course.findById(course_id).exec();
-    if (!course) throw new Error(`Can NOT find a Course with ID-${course_id}`);
-    course = filterByMembership(course, membership, role, user_id);
-    course = await course.populate('lessons');
-    const doc = course.lessons;
-
-    return successfulRes(res, 200, doc);
-  } catch (e) {
-    return failedRes(res, 500, e);
-  }
-};
-*/
 
 exports.getLesson = async (req, res) => {
   try {

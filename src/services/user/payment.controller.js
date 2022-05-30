@@ -145,7 +145,7 @@ exports.paymentcb = async (req, res) => {
     } else {
       throw new Error('The payment process has been failed');
     }
-console.log(hmac);
+
     if (hmac == req.query.hmac) {
       NODE_ENV == 'dev'?  console.log('HMAC is valid'): '';
       res.end();

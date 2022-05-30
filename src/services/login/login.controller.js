@@ -50,6 +50,15 @@ exports.logUser = async (req, res) => {
     } else {
       const token = logged.generateToken(req, res);
 
+      let usr = logged;
+
+      usr = await usr.populate({ path: 'completed'});
+      usr = await usr.populate({ path: 'inprogress'});
+      usr = await usr.populate({ path: 'reads'});
+      req.session.user = usr;
+      console.log(req.session.user);
+      
+
       logged.completed = undefined;
       logged.reads = undefined;
       logged.inprogress = undefined;
@@ -58,8 +67,6 @@ exports.logUser = async (req, res) => {
 
       return successfulRes(res, 200, { user: logged, token });
     }
-    // logged = await logged.populate({ path: 'completed', select: 'name' });
-    // logged = await logged.populate({ path: 'reads', select: 'title'});
   } catch (e) {
     return failedRes(res, 500, e);
   }
