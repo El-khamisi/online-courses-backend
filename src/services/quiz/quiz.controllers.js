@@ -123,7 +123,7 @@ exports.submitQuiz = async (req, res) => {
 
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
     const usr = await User.findById(user_id).exec();
-    // usr.quizzes.push({name: docname, score: response.total});
+    
     usr.quizzes.push({
       name: docname,
       date: (() => {

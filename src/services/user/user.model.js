@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     quizzes: [
       {
         name: String,
-        date: Date,
+        date: {type: Date, get: (v)=> v.split('T')[0]},
         socre: { type: Number, set: (v) => Math.round(v * 10) / 10 },
       },
     ],

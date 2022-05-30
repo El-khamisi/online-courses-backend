@@ -107,31 +107,15 @@ exports.paymentcb = async (req, res) => {
 
 
   try {
-    const { order, source_data } = req.body.obj;
-
+    
     //prettier-ignore
-    const { amount_cents, created_at, currency, error_occured, has_parent_transaction,
-      id, integration_id, is_3d_secure, is_auth, is_capture, is_refunded, 
-      is_standalone_payment, is_voided, owner, pending, 
-      success } = req.body.obj;
-    //prettier-ignore
+    const { pending, success } = req.body.obj;
+    
 
-    const hmacKeys = { amount_cents, created_at, currency, error_occured, has_parent_transaction,
-      id, integration_id, is_3d_secure, is_auth, is_capture, is_refunded, 
-      is_standalone_payment, is_voided, owner, pending, 
-      success } 
 
-    hmacKeys.order = order.id;
-    hmacKeys.pan = source_data.pan;
-    hmacKeys.sub_type = source_data.sub_type;
-    hmacKeys.type = source_data.type;
 
-    const conString = `${Object.values(hmacKeys)}`.replaceAll(',', '');
-    const hmac =crypto.createHmac('SHA512', PAYMOB_HMAC).update(conString).digest('hex');
 
-    console.log(hmacKeys);
-
-    if (hmacKeys.success) {
+    if (success) {
       let doc = await User.findById(user._id).exec();
 
       if (req.body.obj.order.items[0].description.includes('course')) {
@@ -146,12 +130,6 @@ exports.paymentcb = async (req, res) => {
       throw new Error('The payment process has been failed');
     }
 
-    if (hmac == req.query.hmac) {
-      NODE_ENV == 'dev'?  console.log('HMAC is valid'): '';
-      res.end();
-    } else {
-      throw new Error(`HMAC hash string not the same `);
-    }
   } catch (e) {
     console.log(e);
     NODE_ENV == 'dev'?  console.log(e): '';
