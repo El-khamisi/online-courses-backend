@@ -127,12 +127,9 @@ exports.submitQuiz = async (req, res) => {
     let flag = false;
     for(let i=0; i<usr.quizzes.length; i++) {
       if(usr.quizzes[i]._id == quiz_id) {
-        console.log(usr.quizzes[i]._id);
         flag = true;
         usr.quizzes[i].date = new Date();
         usr.quizzes[i].score = response.total;
-        console.log(usr.quizzes[i]._id);
-
         break;
       }
     }

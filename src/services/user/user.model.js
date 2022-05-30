@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
         _id:  mongoose.Schema.Types.ObjectId,
         name: String,
         date: Date,
-        socre: { type: Number, set: (v) => Math.round(v * 10) / 10 },
+        score: { type: Number, set: (v) => Math.round(v * 10) / 10 },
       },
     ],
   },
