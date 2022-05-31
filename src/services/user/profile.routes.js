@@ -16,7 +16,7 @@ router.post('/submit-quiz/:quiz_id', authN, submitQuiz);
 router.post('/enroll/:course_id', authN, enroll);
 router.post('/subscribe', authN, enroll);
 
-router.post('/contact-us', authN, sendMail);
+router.post('/contact-us', sendMail);
 router.post('/pay', authN, payment);
 router.post('/paycb', paymentcb);
 module.exports = router;
