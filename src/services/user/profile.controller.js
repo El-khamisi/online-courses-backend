@@ -140,7 +140,7 @@ exports.sendMail = async (req, res) => {
       },
     });
 
-    let user;
+    let user = 'Guest User';
     if(req.session && req.session.user ){
       user = req.session.user.last_name 
       ? `${req.session.user.first_name} ${req.session.user.last_name}`
