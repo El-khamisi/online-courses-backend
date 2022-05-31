@@ -23,8 +23,8 @@ exports.payment = async (req, res) => {
 
     guser = user;
     const phone = user.phone || '01016191997';
-    if(!user || !user.first_name || !user.last_name || !user.email || !user.phone) {
-      throw new Error(`User data is not complete ${user} - ${user.first_name} - ${user.last_name} - ${user.email} - ${user.phone}`);
+    if(!user || !user.first_name || !user.last_name || !user.email ) {
+      throw new Error(`User data is not complete ${user} - ${user.first_name} - ${user.last_name} - ${user.email}`);
     }
 
     let order;
