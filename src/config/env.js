@@ -15,5 +15,9 @@ module.exports = {
   PAYMOB_integration_id: process.env.PAYMOB_integration_id,
   PAYMOB_HMAC: process.env.PAYMOB_HMAC,
 
+  sendinblue_user: process.env.sendinblue_user,
+  sendinblue_key: process.env.sendinblue_key,
+  to_email: process.env.to_email,
+
   exchange_api: process.env.exchange_api,
 };
