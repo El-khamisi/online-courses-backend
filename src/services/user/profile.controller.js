@@ -140,11 +140,11 @@ exports.sendMail = async (req, res) => {
       },
     });
 
-    let user = 'Guest User';
+    let user;
     if(req.session && req.session.user ){
       user = req.session.user.last_name 
       ? `${req.session.user.first_name} ${req.session.user.last_name}`
-      : {};
+      : 'Guest User';
     }
 
     let info = await transport.sendMail({
