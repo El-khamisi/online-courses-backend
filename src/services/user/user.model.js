@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     photo: { type: String },
     quizzes: [
       {
-        _id:  mongoose.Schema.Types.ObjectId,
+        _id: mongoose.Schema.Types.ObjectId,
         name: String,
         date: Date,
         score: { type: Number, set: (v) => Math.round(v * 10) / 10 },

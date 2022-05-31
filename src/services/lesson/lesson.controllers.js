@@ -5,7 +5,6 @@ const { premiumPlan } = require('../../config/membership');
 const { Instructor } = require('../../config/roles');
 const User = require('../user/user.model');
 
-
 exports.getLesson = async (req, res) => {
   try {
     const course_id = req.params.course_id;
@@ -13,26 +12,23 @@ exports.getLesson = async (req, res) => {
     const user = req.session.user;
     let doc;
 
-
     const course = await Course.findById(course_id).exec();
-    if(!course){
+    if (!course) {
       throw new Error(`Can NOT find a Course with ID-${course_id}`);
-    }
-    else if (course.membership == premiumPlan && course.instructor != user._id) {
-    
-      const tempProgress = user.inprogress.map((e)=>e.course);
-      if(tempProgress.includes(course_id) || user.completed.includes(course_id)){
-        doc = await Lesson.findById(lesson_id).exec();  
+    } else if (course.membership == premiumPlan && course.instructor != user._id) {
+      const tempProgress = user.inprogress.map((e) => e.course);
+      if (tempProgress.includes(course_id) || user.completed.includes(course_id)) {
+        doc = await Lesson.findById(lesson_id).exec();
       }
 
-      if(!doc){
+      if (!doc) {
         throw new Error(`You are not allowed to view this lesson \
 OR there is no such lesson with ID-${lesson_id}`);
       }
     } else {
       doc = await Lesson.findById(lesson_id).exec();
     }
-    return successfulRes (res, 200, doc);
+    return successfulRes(res, 200, doc);
   } catch (e) {
     return failedRes(res, 500, e);
   }

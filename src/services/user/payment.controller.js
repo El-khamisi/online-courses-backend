@@ -11,7 +11,6 @@ const User = require('./user.model');
 let planPeriod = {};
 let guser, course;
 
-
 exports.payment = async (req, res) => {
   const step1Url = 'https://accept.paymob.com/api/auth/tokens';
   const step2Url = 'https://accept.paymob.com/api/ecommerce/orders';
@@ -24,6 +23,9 @@ exports.payment = async (req, res) => {
 
     guser = user;
     const phone = user.phone || '01016191997';
+    if(!user || !user.first_name || !user.last_name || !user.email || !user.phone) {
+      throw new Error('User data is not complete');
+    }
 
     let order;
     if ((course_id && package_id) || (!course_id && !package_id)) {
@@ -97,7 +99,6 @@ exports.payment = async (req, res) => {
       },
     });
 
-     
     return successfulRes(res, 200, { payment_token: step3.data.token });
   } catch (e) {
     return failedRes(res, 500, e);
@@ -105,10 +106,7 @@ exports.payment = async (req, res) => {
 };
 
 exports.paymentcb = async (req, res) => {
-
-
   try {
-    
     //prettier-ignore
     const { pending, success } = req.body.obj;
     const user = guser;
@@ -119,7 +117,6 @@ exports.paymentcb = async (req, res) => {
       if (req.body.obj.order.items[0].description.includes('course')) {
         doc.inprogress.push({ course: course._id, quizzes: [] });
         user.inprogress.push({ course: course._id, quizzes: [] });
-
       } else {
         doc.membership = premiumPlan;
         doc.end_of_membership = planPeriod.expire;
@@ -136,7 +133,7 @@ exports.paymentcb = async (req, res) => {
     res.end();
   } catch (e) {
     console.log(e);
-    NODE_ENV == 'dev'?  console.log(e): '';
+    NODE_ENV == 'dev' ? console.log(e) : '';
 
     res.end();
   }

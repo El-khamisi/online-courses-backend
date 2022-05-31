@@ -16,6 +16,9 @@ exports.regUser = async (req, res) => {
     await saved.save();
 
     const token = saved.generateToken(req, res);
+
+    req.session.user = saved;
+
     saved.completed = undefined;
     saved.reads = undefined;
     saved.inprogress = undefined;
@@ -51,10 +54,9 @@ exports.logUser = async (req, res) => {
     } else {
       const token = logged.generateToken(req, res);
 
-
       req.session.user = logged;
 
-      const user = {... logged._doc};
+      const user = { ...logged._doc };
       user.completed = undefined;
       user.reads = undefined;
       user.inprogress = undefined;

@@ -5,6 +5,8 @@ const { successfulRes, failedRes } = require('../../utils/response');
 const Course = require('../course/course.model');
 const { premiumPlan } = require('../../config/membership');
 const { upload_image } = require('../../config/cloudinary');
+const nodemailer = require('nodemailer');
+
 
 exports.profileView = async (req, res) => {
   try {
@@ -127,3 +129,20 @@ exports.enroll = async (req, res) => {
     return failedRes(res, 500, e);
   }
 };
+
+exports.sendMail = async (req, res)=>{
+  const {from, text} = req.body;
+
+  try{
+    const mailData = {
+      from,
+      to: 'mohammd.sayd@gmail.com',
+      subject: 'No Subject',
+      text
+    };
+    t
+    
+  }catch(e){
+    return failedRes(res, 500, e);
+  }
+}
