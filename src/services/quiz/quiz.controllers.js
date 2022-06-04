@@ -34,6 +34,25 @@ exports.getQuiz = async (req, res) => {
   }
 };
 
+exports.adminGetQuiz = async (req, res) => {
+  try {
+    const _id = req.params.id;
+
+    const doc = await Quiz.aggregate([
+      {
+        $match: { _id: ObjectId(_id) },
+      },
+      {
+        $unset: ['createdAt', 'updatedAt', '__v'],
+      },
+    ]);
+
+    return successfulRes(res, 200, doc);
+  } catch (e) {
+    return failedRes(res, 500, e);
+  }
+};
+
 exports.addQuiz = async (req, res) => {
   try {
     const { name, questions } = req.body;

@@ -6,7 +6,7 @@ const { imageUpload } = require('../../config/multer');
 const { getUsers, getUser, addUser, updateUser, deleteUser } = require('../user/user.controllers');
 const { addCourse, updateCourse, deleteCourse } = require('../course/course.controllers');
 const { addLesson, updateLesson, deleteLesson } = require('../lesson/lesson.controllers');
-const { addQuiz, updateQuiz, deleteQuiz } = require('../quiz/quiz.controllers');
+const { addQuiz, updateQuiz, deleteQuiz, adminGetQuiz } = require('../quiz/quiz.controllers');
 const { addReading, updateReading, deleteReading } = require('../reading/reading.controllers');
 
 //Users
@@ -27,7 +27,8 @@ router.put('/lesson/:id/course/:course_id', authN, isAdmin, updateLesson);
 router.delete('/lesson/:id/course/:course_id', authN, isAdmin, deleteLesson);
 
 //Quizzes
-router.post('/quiz', addQuiz);
+router.get('/quiz', authN, isAdmin, adminGetQuiz);
+router.post('/quiz', authN, isAdmin, addQuiz);
 router.put('/quiz/:id', authN, isAdmin, updateQuiz);
 router.delete('/quiz/:id', authN, isAdmin, deleteQuiz);
 
