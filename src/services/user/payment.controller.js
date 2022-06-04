@@ -24,7 +24,7 @@ exports.payment = async (req, res) => {
     guser = user;
     const phone = user.phone || '01016191997';
     if (!user || !user.first_name || !user.last_name || !user.email) {
-      throw new Error(`User data is not completed required[first_name: ${user.first_name}, last_name: ${user.last_name}, email: ${user.email}`);
+      throw new Error(`User data is not completed required [first_name: ${user.first_name}, last_name: ${user.last_name}, email: ${user.email}]`);
     }
 
     let order;
@@ -59,7 +59,7 @@ exports.payment = async (req, res) => {
     });
 
     package_id ? (planPeriod.name = order.name) : '';
-    package_id ? (planPeriod.expire = subscribe(order.name)) : '';
+    package_id ? (planPeriod.expire = subscribe(order.name, user.end_of_membership)) : '';
     const item = {
       name: course_id ? course_id : package_id,
       description: course_id ? `Payment for course enrollment` : `Payment for premium plan ${order.name} subscription`,

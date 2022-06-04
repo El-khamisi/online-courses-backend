@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const { upload_image } = require('../../config/cloudinary');
+const { plansNames } = require('../plans/plans.model');
+const {subscribe} = require('../../utils/subscribe');
 
 exports.verify = (req, res) => {
   successfulRes(res, 200, { token: res.locals.user });
@@ -76,7 +78,14 @@ exports.updateUser = async (req, res) => {
     doc.email = email ? email : doc.email;
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
-    doc.membership = membership ? membership : doc.membership;
+    // doc.membership = membership ? membership : doc.membership;
+    if(Object.values(plansNames).includes(membership)){
+      doc.membership = premiumPlan;
+      doc.end_of_membership = subscribe(membership, doc.end_of_membership);
+    }else{
+      await doc.save();
+      throw new Error(`Provide valid plan name-${membership}`);
+    }
 
     if (password) {
       doc.password = bcrypt.hashSync(password, 10);
