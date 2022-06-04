@@ -86,7 +86,7 @@ exports.updateUser = async (req, res) => {
       doc.end_of_membership = subscribe(memberplan, doc.end_of_membership);
     }else{
       await doc.save();
-      throw new Error(`Provide valid plan name-${membership}`);
+      throw new Error(`Provide valid plan name-${memberplan}`);
     }
 
     if (password) {
