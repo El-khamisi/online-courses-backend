@@ -79,7 +79,7 @@ exports.updateUser = async (req, res) => {
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
     // doc.membership = membership ? membership : doc.membership;
-    if(Object.values(plansNames).includes(membership)){
+    if(membership && Object.values(plansNames).includes(membership)){
       doc.membership = premiumPlan;
       doc.end_of_membership = subscribe(membership, doc.end_of_membership);
     }else{

@@ -14,6 +14,7 @@ const superAdmin = async () => {
     password: 'admin123',
     role: Admin,
     membership: premiumPlan,
+    quizzes: []
   };
   try {
     const saved = new User(prototype);

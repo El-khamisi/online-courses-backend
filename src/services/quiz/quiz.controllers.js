@@ -123,7 +123,7 @@ exports.submitQuiz = async (req, res) => {
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
     const usr = await User.findById(user_id).exec();
     
-    console.log(usr)
+  
     let flag = false;
     for (let i = 0; i < usr.quizzes.length; i++) {
       if (usr.quizzes[i]._id == quiz_id) {
