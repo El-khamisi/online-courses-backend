@@ -2,6 +2,7 @@ const User = require('../services/user/user.model');
 const { Admin } = require('./roles');
 const bcrypt = require('bcrypt');
 const { premiumPlan } = require('./membership');
+const {plansNames} = require('../services/plans/plans.model');
 
 const superAdmin = async () => {
   await User.findOneAndDelete({
@@ -14,6 +15,7 @@ const superAdmin = async () => {
     password: 'admin123',
     role: Admin,
     membership: premiumPlan,
+    memberplan: plansNames.Biannual,
     quizzes: []
   };
   try {

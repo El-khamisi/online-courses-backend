@@ -1,8 +1,8 @@
 const User = require('../user/user.model');
 const bcrypt = require('bcrypt');
 const { successfulRes, failedRes } = require('../../utils/response');
-const { sign, serialize } = require('../../utils/cookie');
-const { TOKENKEY, NODE_ENV } = require('../../config/env');
+const {premiumPlan, freePlan} = require('../../config/membership');
+const {plansNames} = require('../plans/plans.model');
 
 exports.regUser = async (req, res) => {
   try {
@@ -53,6 +53,11 @@ exports.logUser = async (req, res) => {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     } else {
       const token = logged.generateToken(req, res);
+      const date = new Date().toISOString().split('T')[0];
+      if(logged.membership==premiumPlan && date > logged.end_of_membership){
+        logged.membership = freePlan;
+        logged.memberplan = plansNames.None;
+      }
 
       req.session.user = logged;
 
@@ -61,6 +66,7 @@ exports.logUser = async (req, res) => {
       user.reads = undefined;
       user.inprogress = undefined;
       user.quizzes = undefined;
+
 
       return successfulRes(res, 200, { user: user, token });
     }

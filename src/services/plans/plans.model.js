@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const plansNames = {
+  None: 'None',
   Monthly: 'Monthly',
   Biannual: 'Biannual',
   Annual: 'Annual',

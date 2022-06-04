@@ -119,9 +119,11 @@ exports.paymentcb = async (req, res) => {
         user.inprogress.push({ course: course._id, quizzes: [] });
       } else {
         doc.membership = premiumPlan;
+        doc.memberplan = planPeriod.name;
         doc.end_of_membership = planPeriod.expire;
 
         user.membership = premiumPlan;
+        user.memberplan = planPeriod.name;
         user.end_of_membership = planPeriod.expire;
       }
 

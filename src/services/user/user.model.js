@@ -6,6 +6,7 @@ const validator = require('validator');
 const { TOKENKEY, NODE_ENV } = require('../../config/env');
 const roles = require('../../config/roles');
 const membership = require('../../config/membership');
+const { plansNames } = require('../plans/plans.model');
 
 const userSchema = new mongoose.Schema(
   {
@@ -16,6 +17,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: [true, 'Password is required'] },
     role: { type: String, enum: [...Object.values(roles), 'Invalid role title'], default: roles.Student },
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'], default: membership.freePlan },
+    memberplan: {type: String, enum: [...Object.values(plansNames), 'Invalid memberplan name'], default: plansNames.None},
     end_of_membership: { type: Date },
     inprogress: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }] }],
     completed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],

@@ -34,7 +34,7 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { first_name, last_name, email, phone, password, role, membership } = req.body;
+    const { first_name, last_name, email, phone, password, role, membership, memberplan } = req.body;
     const photo = req.file?.path;
 
     const saved = new User({
@@ -45,6 +45,7 @@ exports.addUser = async (req, res) => {
       password,
       role,
       membership,
+      memberplan,
       photo,
     });
     if (password) {
@@ -66,7 +67,7 @@ exports.addUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const _id = req.params.id;
-    const { first_name, last_name, email, phone, password, role, membership } = req.body;
+    const { first_name, last_name, email, phone, password, role, membership, memberplan } = req.body;
     const photo = req.file?.path;
 
     let doc = await User.findById(_id);
@@ -79,9 +80,10 @@ exports.updateUser = async (req, res) => {
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
     // doc.membership = membership ? membership : doc.membership;
-    if(membership && Object.values(plansNames).includes(membership)){
+    if(membership && Object.values(plansNames).includes(memberplan)){
       doc.membership = premiumPlan;
-      doc.end_of_membership = subscribe(membership, doc.end_of_membership);
+      doc.memberplan = memberplan;
+      doc.end_of_membership = subscribe(memberplan, doc.end_of_membership);
     }else{
       await doc.save();
       throw new Error(`Provide valid plan name-${membership}`);
