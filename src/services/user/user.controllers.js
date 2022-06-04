@@ -13,7 +13,14 @@ exports.getUsers = async (req, res) => {
   try {
     let q = req.query;
 
-    const response = await User.find(q).sort('-createdAt');
+    const response = await User.aggregate([
+      {
+        $project: {first_name: 1, last_name: 1, email: 1, membership: 1, memberplan: 1}
+      },
+      {
+        $sort: { createdAt: -1 }
+      }
+    ]);
     return successfulRes(res, 200, response);
   } catch (e) {
     return failedRes(res, 500, e);
@@ -81,7 +88,6 @@ exports.updateUser = async (req, res) => {
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
     // doc.membership = membership ? membership : doc.membership;
-    console.log(req.body)
     if(membership == premiumPlan && Object.values(plansNames).includes(memberplan)){
       doc.membership = premiumPlan;
       doc.memberplan = memberplan;
