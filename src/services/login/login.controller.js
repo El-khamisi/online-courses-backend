@@ -57,6 +57,7 @@ exports.logUser = async (req, res) => {
       if(logged.membership==premiumPlan && date > logged.end_of_membership){
         logged.membership = freePlan;
         logged.memberplan = plansNames.None;
+        await logged.save();
       }
 
       req.session.user = logged;

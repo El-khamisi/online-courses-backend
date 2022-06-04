@@ -18,7 +18,7 @@ exports.getUsers = async (req, res) => {
         $project: {first_name: 1, last_name: 1, email: 1, membership: 1, memberplan: 1}
       },
       {
-        $sort: { createdAt: -1 }
+        $sort: {createdAt: -1}
       }
     ]);
     return successfulRes(res, 200, response);
