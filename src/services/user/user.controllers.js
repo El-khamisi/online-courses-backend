@@ -4,6 +4,7 @@ const { successfulRes, failedRes } = require('../../utils/response');
 const { upload_image } = require('../../config/cloudinary');
 const { plansNames } = require('../plans/plans.model');
 const {subscribe} = require('../../utils/subscribe');
+const { premiumPlan } = require('../../config/membership');
 
 exports.verify = (req, res) => {
   successfulRes(res, 200, { token: res.locals.user });
@@ -80,7 +81,8 @@ exports.updateUser = async (req, res) => {
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
     // doc.membership = membership ? membership : doc.membership;
-    if(membership && Object.values(plansNames).includes(memberplan)){
+    console.log(req.body)
+    if(membership == premiumPlan && Object.values(plansNames).includes(memberplan)){
       doc.membership = premiumPlan;
       doc.memberplan = memberplan;
       doc.end_of_membership = subscribe(memberplan, doc.end_of_membership);
