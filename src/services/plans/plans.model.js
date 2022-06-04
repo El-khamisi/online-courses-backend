@@ -19,7 +19,7 @@ const initPlans = async () => {
   const plan = await mongoose.connection.models.Plan.find().exec();
 
   for (const value of Object.values(plansNames)) {
-    if (!plan.some((e) => e.name == value)) {
+    if (!plan.some((e) => e.name == value) && value != plansNames.None) {
       let preprice;
       switch (value) {
         case plansNames.Monthly:
