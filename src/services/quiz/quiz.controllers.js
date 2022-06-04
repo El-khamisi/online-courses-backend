@@ -111,6 +111,7 @@ exports.submitQuiz = async (req, res) => {
     let docname = doc.name;
     doc = doc.questions;
     let response = { answers: [], total: 0 };
+console.log("questions", questions);
 
     questions.forEach((e) => {
       doc.forEach((ee) => {
@@ -120,10 +121,10 @@ exports.submitQuiz = async (req, res) => {
         }
       });
     });
-
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
     const usr = await User.findById(user_id).exec();
-
+    
+    console.log(response.toString())
     let flag = false;
     for (let i = 0; i < usr.quizzes.length; i++) {
       if (usr.quizzes[i]._id == quiz_id) {
