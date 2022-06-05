@@ -65,7 +65,7 @@ module.exports = async (app) => {
       secret: TOKENKEY,
       store: MongoStore.create({ clientPromise }),
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, //24 Hours OR Oneday
         sameSite: NODE_ENV == 'dev' ? '' : 'none',
@@ -81,7 +81,6 @@ module.exports = async (app) => {
         if (NODE_ENV != 'dev') data += '; Secure; SameSite=None';
         const prev = res.getHeader('Set-Cookie') || [];
         var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
-        // const cook = data.split('s_id')[1].split(';')[0].split('=')[1];
 
         res.setHeader('Set-Cookie', header);
       }
