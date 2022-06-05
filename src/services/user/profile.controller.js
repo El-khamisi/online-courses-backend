@@ -141,10 +141,8 @@ exports.sendMail = async (req, res) => {
     });
 
     let user = 'Guest User';
-    if(req.session && req.session.user ){
-      user = req.session.user.last_name 
-      ? `${req.session.user.first_name} ${req.session.user.last_name}`
-      : 'Guest User';
+    if (req.session && req.session.user) {
+      user = req.session.user.last_name ? `${req.session.user.first_name} ${req.session.user.last_name}` : 'Guest User';
     }
 
     let info = await transport.sendMail({
@@ -155,8 +153,7 @@ exports.sendMail = async (req, res) => {
       html: `<p>${text}</p>`,
     });
 
-    return successfulRes(res, 200, {response: info.response, from: info.envelope.from,
-      to: info.envelope.to[0]});
+    return successfulRes(res, 200, { response: info.response, from: info.envelope.from, to: info.envelope.to[0] });
   } catch (e) {
     return failedRes(res, 500, e);
   }

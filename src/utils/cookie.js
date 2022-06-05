@@ -1,10 +1,11 @@
 const crypto = require('crypto');
+const { TOKENKEY, NODE_ENV } = require('../config/env');
 var decode = decodeURIComponent;
 var encode = encodeURIComponent;
 var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
 var pairSplitRegExp = /; */;
 
-exports.serialize = function (name, val, options) {
+serialize = function (name, val, options) {
   var opt = options || {};
   var enc = opt.encode || encode;
 
@@ -90,8 +91,19 @@ exports.serialize = function (name, val, options) {
   return str;
 };
 
-exports.sign = function (val, secret) {
+sign = function (val, secret) {
   if ('string' != typeof val) throw new TypeError('Cookie value must be provided as a string.');
   if ('string' != typeof secret) throw new TypeError('Secret string must be provided.');
   return val + '.' + crypto.createHmac('sha256', secret).update(val).digest('base64').replace(/\=+$/, '');
+};
+
+exports.setS_id = (req, res) => {
+  const signed = 's:' + sign(req.sessionID, TOKENKEY);
+  let data = serialize('s_id', signed, req.session.cookie.data);
+  //
+  if (NODE_ENV != 'dev') data += '; Secure; SameSite=None';
+  const prev = res.getHeader('Set-Cookie') || [];
+  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
+
+  res.setHeader('Set-Cookie', header);
 };

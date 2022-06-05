@@ -19,7 +19,7 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 const plans = require('./services/plans/plans.routes');
 
-const { sign, serialize } = require('./utils/cookie');
+
 const { initPlans } = require('./services/plans/plans.model');
 
 module.exports = async (app) => {
@@ -72,20 +72,7 @@ module.exports = async (app) => {
         secure: NODE_ENV == 'dev' ? false : true,
         httpOnly: false,
       },
-    }),
-    (req, res, next) => {
-      
-        const signed = 's:' + sign(req.sessionID, TOKENKEY);
-        let data = serialize('s_id', signed, req.session.cookie.data);
-        //
-        if (NODE_ENV != 'dev') data += '; Secure; SameSite=None';
-        const prev = res.getHeader('Set-Cookie') || [];
-        var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
-
-        res.setHeader('Set-Cookie', header);
-      
-      return next();
-    }
+    })
   );
   const unless = function (paths, middleware) {
     let flag = false;

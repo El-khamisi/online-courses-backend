@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { successfulRes, failedRes } = require('../../utils/response');
 const {premiumPlan, freePlan} = require('../../config/membership');
 const {plansNames} = require('../plans/plans.model');
+const { setS_id } = require('../../utils/cookie');
 
 exports.regUser = async (req, res) => {
   try {
@@ -24,7 +25,7 @@ exports.regUser = async (req, res) => {
     saved.inprogress = undefined;
     saved.password = undefined;
     saved.quizzes = undefined;
-
+    setS_id(req, res);
     return successfulRes(res, 201, { user: saved, token });
   } catch (e) {
     return failedRes(res, 500, e);
@@ -68,7 +69,7 @@ exports.logUser = async (req, res) => {
       user.inprogress = undefined;
       user.quizzes = undefined;
 
-
+    setS_id(req, res);
       return successfulRes(res, 200, { user: user, token });
     }
   } catch (e) {

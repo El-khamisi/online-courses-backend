@@ -3,7 +3,7 @@ const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const { upload_image } = require('../../config/cloudinary');
 const { plansNames } = require('../plans/plans.model');
-const {subscribe} = require('../../utils/subscribe');
+const { subscribe } = require('../../utils/subscribe');
 const { premiumPlan, freePlan } = require('../../config/membership');
 
 exports.verify = (req, res) => {
@@ -15,11 +15,11 @@ exports.getUsers = async (req, res) => {
 
     const response = await User.aggregate([
       {
-        $sort: {createdAt: -1}
+        $sort: { createdAt: -1 },
       },
       {
-        $project: {first_name: 1, last_name: 1, email: 1, membership: 1, memberplan: 1}
-      }
+        $project: { first_name: 1, last_name: 1, email: 1, membership: 1, memberplan: 1 },
+      },
     ]);
     return successfulRes(res, 200, response);
   } catch (e) {
@@ -45,12 +45,11 @@ exports.addUser = async (req, res) => {
     const { first_name, last_name, email, phone, password, role, membership, memberplan } = req.body;
     const photo = req.file?.path;
 
-    if(membership == premiumPlan && Object.values(plansNames).includes(memberplan)
-    && memberplan != plansNames.None){
+    if (membership == premiumPlan && Object.values(plansNames).includes(memberplan) && memberplan != plansNames.None) {
       doc.membership = premiumPlan;
       doc.memberplan = memberplan;
       doc.end_of_membership = subscribe(memberplan, doc.end_of_membership);
-    }else{
+    } else {
       await doc.save();
       throw new Error(`Provide valid plan name-${memberplan}`);
     }
@@ -98,15 +97,13 @@ exports.updateUser = async (req, res) => {
     doc.phone = phone ? phone : doc.phone;
     doc.role = role ? role : doc.role;
     // doc.membership = membership ? membership : doc.membership;
-    if(membership == freePlan){
-      doc.membership = freePlan
-    }
-    else if(membership == premiumPlan && Object.values(plansNames).includes(memberplan)
-    && memberplan != plansNames.None){
+    if (membership == freePlan) {
+      doc.membership = freePlan;
+    } else if (membership == premiumPlan && Object.values(plansNames).includes(memberplan) && memberplan != plansNames.None) {
       doc.membership = premiumPlan;
       doc.memberplan = memberplan;
       doc.end_of_membership = subscribe(memberplan, doc.end_of_membership);
-    }else{
+    } else {
       await doc.save();
       throw new Error(`Provide valid plan name-${memberplan}`);
     }
