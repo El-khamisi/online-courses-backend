@@ -19,7 +19,6 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 const plans = require('./services/plans/plans.routes');
 
-
 const { initPlans } = require('./services/plans/plans.model');
 
 module.exports = async (app) => {

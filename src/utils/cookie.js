@@ -1,9 +1,7 @@
 const crypto = require('crypto');
 const { TOKENKEY, NODE_ENV } = require('../config/env');
-var decode = decodeURIComponent;
 var encode = encodeURIComponent;
 var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
-var pairSplitRegExp = /; */;
 
 serialize = function (name, val, options) {
   var opt = options || {};

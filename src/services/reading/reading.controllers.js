@@ -33,7 +33,7 @@ exports.getReading = async (req, res) => {
   try {
     const _id = req.params.id;
     const user = req.session.user;
-    console.log(req.session);
+
     const doc = await Reading.findById(_id).populate('quizzes').sort('-createdAt');
 
     if (doc && doc.membership == premiumPlan && user.membership == freePlan) {

@@ -7,7 +7,6 @@ const { payment, paymentcb } = require('./payment.controller');
 const { submitQuiz } = require('../quiz/quiz.controllers');
 
 //Profile
-
 router.get('/myprofile', authN, profileView);
 router.put('/myprofile', authN, imageUpload.single('photo'), profileUpdate);
 router.delete('/myprofile', authN, profileDelete);
