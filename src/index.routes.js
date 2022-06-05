@@ -74,7 +74,7 @@ module.exports = async (app) => {
       },
     }),
     (req, res, next) => {
-      if (!req.cookies.s_id) {
+      
         const signed = 's:' + sign(req.sessionID, TOKENKEY);
         let data = serialize('s_id', signed, req.session.cookie.data);
         //
@@ -83,7 +83,7 @@ module.exports = async (app) => {
         var header = Array.isArray(prev) ? prev.concat(data) : [prev, data];
 
         res.setHeader('Set-Cookie', header);
-      }
+      
       return next();
     }
   );

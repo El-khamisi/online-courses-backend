@@ -61,7 +61,6 @@ exports.logUser = async (req, res) => {
       }
 
       req.session.user = logged;
-      console.log(req.session)
 
       const user = { ...logged._doc };
       user.completed = undefined;
