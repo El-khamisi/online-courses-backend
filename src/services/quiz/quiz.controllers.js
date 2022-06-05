@@ -88,6 +88,7 @@ exports.updateQuiz = async (req, res) => {
 
     doc.name = name ? name : doc.name;
     if (doc.questions) {
+      doc.questions = [];
       questions.forEach((e) => {
         const obj = {};
         e.options.forEach((ee) => (obj[ee.value] = ee.option_name));
