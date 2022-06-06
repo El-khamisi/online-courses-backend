@@ -85,7 +85,9 @@ exports.logout = async (req, res) => {
     const session = MongoStore.create({ client: mongoose.connection.getClient() });
     session.destroy(req.sessionID);
 
-    res.clearCookie('authorization');
+    
+    res.set('authorization', 'Path=/; Secure; sameSite=None');
+    res.set('s_id', 'Path=/; Secure; sameSite=None');
     return successfulRes(res, 200, 'You have been logged out successfully');
   } catch (err) {
     return failedRes(res, 500, 'Invalid logout operation');
