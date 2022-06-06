@@ -57,13 +57,10 @@ exports.profileView = async (req, res) => {
 exports.profileUpdate = async (req, res) => {
   try {
     const _id = res.locals.user.id;
-    const { first_name, last_name, email, phone, current_password, new_password, role, membership } = req.body;
+    const { first_name, last_name, email, phone, role, membership } = req.body;
     const photo = req.file?.path;
 
     let doc = await User.findById(_id).exec();
-    if (!bcrypt.compareSync(current_password, doc.password)) {
-      throw new Error('Old Password is invalid');
-    }
 
     if (photo) {
       doc.photo = await upload_image(photo, doc._id, 'user_thumbs');
@@ -72,9 +69,6 @@ exports.profileUpdate = async (req, res) => {
     doc.last_name = last_name ? last_name : doc.last_name;
     doc.email = email ? email : doc.email;
     doc.phone = phone ? phone : doc.phone;
-    if (new_password) {
-      doc.password = bcrypt.hashSync(new_password, 10);
-    }
 
     const valid = doc.validateSync();
     if (valid) throw valid;
