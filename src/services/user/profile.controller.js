@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const bcrypt = require('bcrypt');
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
