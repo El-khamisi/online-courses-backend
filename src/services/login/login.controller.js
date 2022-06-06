@@ -6,6 +6,7 @@ const { plansNames } = require('../plans/plans.model');
 const { setS_id } = require('../../utils/cookie');
 const { default: mongoose } = require('mongoose');
 const MongoStore = require('connect-mongo');
+const { NODE_ENV } = require('../../config/env');
 
 exports.regUser = async (req, res) => {
   try {
@@ -85,9 +86,16 @@ exports.logout = async (req, res) => {
     const session = MongoStore.create({ client: mongoose.connection.getClient() });
     session.destroy(req.sessionID);
 
-    
-    res.set('authorization', 'Path=/; Secure; sameSite=None');
-    res.set('s_id', 'Path=/; Secure; sameSite=None');
+    res.cookie('authorization', '', {
+      sameSite: NODE_ENV == 'dev' ? false : 'none',
+      secure: NODE_ENV == 'dev' ? false : true,
+    });
+
+    res.cookie('s_id', '', {
+      sameSite: NODE_ENV == 'dev' ? false : 'none',
+      secure: NODE_ENV == 'dev' ? false : true,
+    });
+
     return successfulRes(res, 200, 'You have been logged out successfully');
   } catch (err) {
     return failedRes(res, 500, 'Invalid logout operation');
@@ -95,7 +103,7 @@ exports.logout = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-  const {current_password, new_password} = req.body;
+  const { current_password, new_password } = req.body;
   const user_id = res.locals.user.id;
   try {
     const user = await User.findById(user_id).exec();
@@ -105,13 +113,12 @@ exports.resetPassword = async (req, res) => {
     const matched = bcrypt.compareSync(current_password, user.password);
     if (!matched) {
       return failedRes(res, 400, new Error('Current password is invalid'));
-    }else{
+    } else {
       user.password = bcrypt.hashSync(new_password, 10);
       await user.save();
       return successfulRes(res, 200, 'Password has been changed successfully');
     }
-
-  }catch(e){
+  } catch (e) {
     return failedRes(res, 500, e);
   }
 };

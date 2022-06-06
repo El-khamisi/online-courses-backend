@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { logUser, regUser, logout, resetPassword } = require('./login.controller');
-const {authN} = require('../../middelwares/authN');
+const { authN } = require('../../middelwares/authN');
 
 router.post('/login', logUser);
 router.post('/signup', regUser);
