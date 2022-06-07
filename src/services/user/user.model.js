@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, trim: true, required: [true, 'Email is required'], unique: true, validate: [validator.isEmail, 'Invalid Email'] },
     phone: { type: String },
     password: { type: String, required: [true, 'Password is required'] },
+    isVerified: { type: Boolean, default: false },
     role: { type: String, enum: [...Object.values(roles), 'Invalid role title'], default: roles.Student },
     membership: { type: String, enum: [...Object.values(membership), 'Invalid membership plan'], default: membership.freePlan },
     memberplan: { type: String, enum: [...Object.values(plansNames), 'Invalid memberplan name'], default: plansNames.None },

@@ -1,11 +1,11 @@
-const nodemailer = require('nodemailer');
 const ObjectId = require('mongoose').Types.ObjectId;
 const User = require('./user.model');
 const { successfulRes, failedRes } = require('../../utils/response');
 const Course = require('../course/course.model');
 const { premiumPlan } = require('../../config/membership');
 const { upload_image } = require('../../config/cloudinary');
-const { sendinblue_user, sendinblue_key, to_email } = require('../../config/env');
+const { to_email } = require('../../config/env');
+const { smtpMail } = require('../../utils/smtp');
 
 exports.profileView = async (req, res) => {
   try {
@@ -123,28 +123,12 @@ exports.sendMail = async (req, res) => {
   const { from, text } = req.body;
 
   try {
-    let transport = nodemailer.createTransport({
-      host: 'smtp-relay.sendinblue.com',
-      port: 587,
-      // secure: false,
-      auth: {
-        user: sendinblue_user,
-        pass: sendinblue_key,
-      },
-    });
-
-    let user = 'Guest User';
+    let userName = 'Guest User';
     if (req.session && req.session.user) {
-      user = req.session.user.last_name ? `${req.session.user.first_name} ${req.session.user.last_name}` : 'Guest User';
+      userName = req.session.user.last_name ? `${req.session.user.first_name} ${req.session.user.last_name}` : 'Guest User';
     }
-
-    let info = await transport.sendMail({
-      from: `${user} <${from}>`,
-      to: to_email,
-      subject: 'Email sent through contact us form',
-      text,
-      html: `<p>${text}</p>`,
-    });
+    const subject = 'Email sent through contact us form';
+    const info = await smtpMail(to_email, userName, from, subject, text);
 
     return successfulRes(res, 200, { response: info.response, from: info.envelope.from, to: info.envelope.to[0] });
   } catch (e) {

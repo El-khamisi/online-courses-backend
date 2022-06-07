@@ -1,12 +1,15 @@
 const User = require('../user/user.model');
+const Verification = require('./email-verification.model');
 const bcrypt = require('bcrypt');
+const crypto = require('node:crypto');
 const { successfulRes, failedRes } = require('../../utils/response');
 const { premiumPlan, freePlan } = require('../../config/membership');
 const { plansNames } = require('../plans/plans.model');
 const { setS_id } = require('../../utils/cookie');
 const { default: mongoose } = require('mongoose');
 const MongoStore = require('connect-mongo');
-const { NODE_ENV } = require('../../config/env');
+const { NODE_ENV, TOKENKEY, to_email, server_domain } = require('../../config/env');
+const { smtpMail } = require('../../utils/smtp');
 
 exports.regUser = async (req, res) => {
   try {
@@ -29,7 +32,22 @@ exports.regUser = async (req, res) => {
     saved.password = undefined;
     saved.quizzes = undefined;
     setS_id(req, res);
-    return successfulRes(res, 201, { user: saved, token });
+
+    //
+    const hash = crypto.createHmac('sha256', TOKENKEY).update(saved._id.toString()).digest('hex');
+    const verification = new Verification({ verification_hash: hash, user_id: saved._id });
+    await verification.save();
+    const info = await smtpMail(
+      saved.email,
+      'textgenuss',
+      to_email,
+      'textgenuss email verification',
+      `Hello ${saved.first_name} ${saved.last_name},
+    You requested to use this email address to access your Textgenuss account.
+    Click the link below to verify this email address
+    ${server_domain}/email-verification/${verification.verification_hash}`
+    );
+    return successfulRes(res, 201, { user: saved, token, email_verifiction: info.response });
   } catch (e) {
     return failedRes(res, 500, e);
   }

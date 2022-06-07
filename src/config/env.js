@@ -18,6 +18,9 @@ module.exports = {
   sendinblue_user: process.env.sendinblue_user,
   sendinblue_key: process.env.sendinblue_key,
   to_email: process.env.to_email,
+  smtp_host: process.env.smtp_host,
+  smtp_port: process.env.smtp_port,
+  server_domain: process.env.server_domain,
 
   exchange_api: process.env.exchange_api,
 };

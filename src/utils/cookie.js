@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const { TOKENKEY, NODE_ENV } = require('../config/env');
 var encode = encodeURIComponent;
 var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
