@@ -3,8 +3,6 @@ const Verification = require('./email-verification.model');
 const bcrypt = require('bcrypt');
 const crypto = require('node:crypto');
 const { successfulRes, failedRes } = require('../../utils/response');
-const { premiumPlan, freePlan } = require('../../config/membership');
-const { plansNames } = require('../plans/plans.model');
 const { setS_id } = require('../../utils/cookie');
 const { default: mongoose } = require('mongoose');
 const MongoStore = require('connect-mongo');
@@ -75,12 +73,8 @@ exports.logUser = async (req, res) => {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     } else {
       const token = logged.generateToken(req, res);
-      const date = new Date().toISOString().split('T')[0];
-      if (logged.membership == premiumPlan && date > logged.end_of_membership) {
-        logged.membership = freePlan;
-        logged.memberplan = plansNames.None;
-        await logged.save();
-      }
+      
+      
 
       req.session.user = logged;
 

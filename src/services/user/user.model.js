@@ -47,7 +47,7 @@ userSchema.methods.generateToken = function (req, res) {
       membership: this.membership,
     },
     TOKENKEY,
-    { expiresIn: '24h' }
+    { expiresIn: '7d' }
   );
 
   // req.session.user = this;
