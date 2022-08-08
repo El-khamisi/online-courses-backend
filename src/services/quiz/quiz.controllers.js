@@ -142,6 +142,7 @@ exports.submitQuiz = async (req, res) => {
     });
     response.total = parseFloat(((5 / doc.length) * response.total).toFixed(1));
     const usr = await User.findById(user_id).exec();
+    if(!usr) return failedRes(res, 400, new Error(`Can NOT found User`));
 
     let flag = false;
     for (let i = 0; i < usr.quizzes.length; i++) {
