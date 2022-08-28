@@ -6,7 +6,7 @@
     "prettier": "prettier --config .prettierrc 'src/**/*.js' --write",
     "dev": "nodemon index.js 5050",
     "prod": " NODE_ENV=prod node index.js",
-    "start": "node index.js"
+    "start": "NODE_ENV=prod node index.js"
   },
   "author": "",
   "license": "ISC",
