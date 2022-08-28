@@ -16,8 +16,6 @@ const port =   PORT|| 8080;
 //Create Application
 const app = express();
 
-const {superAdmin} = require('./src/config/seeder');
-superAdmin();
 
 const endpoints = require('./src/index.routes');
 endpoints(app);

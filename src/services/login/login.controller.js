@@ -73,8 +73,6 @@ exports.logUser = async (req, res) => {
       return failedRes(res, 400, null, 'Email or Password is invalid');
     } else {
       const token = logged.generateToken(req, res);
-      
-      
 
       req.session.user = logged;
 

@@ -19,6 +19,8 @@ const role = require('./services/role/role.routes');
 const profile = require('./services/user/profile.routes');
 const plans = require('./services/plans/plans.routes');
 
+const { superAdmin } = require('./config/seeder');
+
 const { initPlans } = require('./services/plans/plans.model');
 
 module.exports = async (app) => {
@@ -32,6 +34,7 @@ module.exports = async (app) => {
       .connect(DBURI)
       .then((conn) => {
         console.log('connected to local database successfully');
+        superAdmin();
         return conn.connection.getClient();
       })
       .catch(() => {
@@ -42,6 +45,7 @@ module.exports = async (app) => {
       .connect(DBURI_remote)
       .then((conn) => {
         console.log('connected to database successfully');
+        superAdmin();
         return conn.connection.getClient();
       })
       .catch(() => {
@@ -51,12 +55,14 @@ module.exports = async (app) => {
   initPlans();
 
   // Middlewares
-  app.use(
-    cors({
-      origin: ['http://localhost:3000', 'https://textgenuss.net'],
-      credentials: true,
-    })
-  );
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    res.set('Access-Control-Allow-Origin', origin);
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.set('Access-Control-Allow-Credentials', true);
+    return next();
+  });
 
   app.use(
     session({
