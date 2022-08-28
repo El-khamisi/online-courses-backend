@@ -5,8 +5,8 @@
   "scripts": {
     "prettier": "prettier --config .prettierrc 'src/**/*.js' --write",
     "dev": "nodemon index.js 5050",
-    "prod": " NODE_ENV=prod node index.js",
-    "start": "NODE_ENV=prod node index.js"
+    "prod": " NODE_ENV=prod node index.js 8080",
+    "start": "NODE_ENV=prod node index.js 8080"
   },
   "author": "",
   "license": "ISC",
