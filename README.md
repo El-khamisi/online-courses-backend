@@ -1,8 +1,8 @@
-# textgenuss-Backend
+# online courses-Backend
 
 ## Description
 A Backend Server ( based on `node.js` and `express` framework) using `MongoDB` as a database provider and `mongoose` as ODM.
-textgenuss is an online platform for German language learning the platform has the ability to register new users using `JWT token` with different plans of subscription, explore different courses and read articles. The instructor of the platform can add free and paid courses with graded quizzes in addition to publishing premium and free articles for reading. The instructor can manage payments through `Paymob Payment Gateway` which is integrated perfectly with the platform and give the capability to pay, refund, and mentor transactions.
+The project is an online platform for German language learning the platform has the ability to register new users using `JWT token` with different plans of subscription, explore different courses and read articles. The instructor of the platform can add free and paid courses with graded quizzes in addition to publishing premium and free articles for reading. The instructor can manage payments through `Paymob Payment Gateway` which is integrated perfectly with the platform and give the capability to pay, refund, and mentor transactions.
 
 
 ## Features
