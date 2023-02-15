@@ -1,0 +1,56 @@
+name: Build && Deploy textgenuss-backend
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  auto-format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Run Lint && Prettier Formatter
+      run: |
+        npm i prettier
+        npm run prettier
+
+    - name: Commit & Push changes
+      id: auto-commit
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply Lint&&Prettier Formatting
+
+    - name: "Run if changes have been detected"
+      if: steps.auto-commit.outputs.changes_detected == 'true'
+      run: echo "### Files have been Formatted successfully! :art::tada:" >> $GITHUB_STEP_SUMMARY
+
+    - name: "Run if no changes have been detected"
+      if: steps.auto-commit.outputs.changes_detected == 'false'
+      run: echo "### No Formatting Changes have been made! :dart::heavy_check_mark:" >> $GITHUB_STEP_SUMMARY
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [auto-format]
+
+    steps:        
+    - name: steps to deploay
+      uses: appleboy/ssh-action@v0.1.4
+      with:
+        username: ubuntu
+        host: ${{ secrets.SSH_HOST }}
+        key: ${{ secrets.SSH_KEY }}
+        script:  |
+          export PM_PROCESS="textgenuss-server"
+          cd ~/$PM_PROCESS
+
+          git pull
+          npm i
+          pm2 delete -s app || :
+          pm2 start npm --name $PM_PROCESS -- start
+          pm2 save
+          pm2 list
+
+    - name: Finished
+      run: echo "### Production branch has been deployed! :rocket:" >> $GITHUB_STEP_SUMMARY
